@@ -50,14 +50,13 @@ def Kojun(i, j, numeros_matriz, regioes_matriz, regioes, tamanho_matriz):
     if (i == tamanho_matriz - 1 and j == tamanho_matriz):
         return True
     if j == tamanho_matriz:
-        i += 1
-        j = 0
+        return Kojun(i+1, 0, numeros_matriz, regioes_matriz, regioes, tamanho_matriz)
     if numeros_matriz[i][j] > 0:
         return Kojun(i, j + 1, numeros_matriz, regioes_matriz, regioes, tamanho_matriz)
     
     id_regiao = regioes_matriz[i][j]
     regiao = regioes[id_regiao]
-    for num in range(1, len(regiao)+1): 
+    for num in range(1, len(regiao)+1):
      
         if numero_eh_possivel(i, j, num, numeros_matriz, regioes_matriz, regioes, tamanho_matriz):
          
