@@ -48,12 +48,12 @@ atualizarRegiao regioesMatriz (i, j) regioes =
     in take idRegiao regioes ++ [regiaoAtualizada] ++ drop (idRegiao + 1) regioes
 
 -- Parametros: i, j, numeros_matriz, regioes_matriz, regioes
-kojun :: Int -> Int -> [[Int]] -> [[Int]] -> [[(Int, Int)]] -> Bool
+kojun :: Int -> Int -> [[Int]] -> [[Int]] -> [[(Int, Int)]] -> (Bool, [[Int]])
 kojun i j numerosMatriz regioesMatriz regioes =
 
     -- Percorreu a matriz inteira sem achar erros
     if (i == tamanhoMatriz - 1) && (j == tamanhoMatriz) then
-        True
+        (True, numerosMatriz)
 
     -- Terminou a linha
     else if (j == tamanhoMatriz) then
@@ -64,13 +64,22 @@ kojun i j numerosMatriz regioesMatriz regioes =
 
     else
         -- TO DO
-        False
+        let idRegiao = regioesMatriz !! i !! j
+        in testarNumeros 0 (tamanhoRegiao regioes idRegiao)
 
 tamanhoRegiao :: [[(Int, Int)]] -> Int -> Int
 tamanhoRegiao regioes idRegiao =
     length (regioes !! idRegiao)
 
+-- TO DO
+numeroEhPossivel :: Bool
+numeroEhPossivel = False
 
+-- TO DO
+testarNumeros :: Int -> Int -> (Bool, [[Int]])
+testarNumeros num numMax =
+    (False, [[0]])
+    
 main = do
     -- imprimirMatriz matrizRegioes
     -- print (definirRegioes matrizRegioes quantidadeRegioes tamanhoMatriz)
