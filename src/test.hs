@@ -3,13 +3,13 @@
 {-# HLINT ignore "Redundant if" #-}
 {-# HLINT ignore "Redundant bracket" #-}
 
-matrizNumerosInicial :: [[Int]]
-matrizNumerosInicial = [[2,0,0,0,1,0],
-                        [0,0,0,3,0,0],
-                        [0,3,0,0,5,3],
-                        [0,0,0,0,0,0],
-                        [0,0,3,0,4,2],
-                        [0,0,0,0,0,0]]
+matrizNumeros :: [[Int]]
+matrizNumeros = [[2,0,0,0,1,0],
+                 [0,0,0,3,0,0],
+                 [0,3,0,0,5,3],
+                 [0,0,0,0,0,0],
+                 [0,0,3,0,4,2],
+                 [0,0,0,0,0,0]]
 
 matrizRegioes :: [[Int]]
 matrizRegioes = [[0 ,0 ,1 ,1 ,1 ,2],
@@ -69,36 +69,34 @@ kojun i j numerosMatriz regioesMatriz regioes =
         kojun i (j+1) numerosMatriz regioesMatriz regioes
 
     else
-        let maxNum = tamanhoRegiao regioes (matrizRegioes !! i !! j)
-        in avaliarNumeros 1 maxNum i j numerosMatriz regioesMatriz regioes
+        let rangeNums = [1..(tamanhoRegiao regioes (regioesMatriz !! i !! j))]
+        in 
+        foldl (\b num -> let matrizAtualizada = atualizarMatriz num i j numerosMatriz
+                         in if (numeroEhPossivel i j num numerosMatriz regioesMatriz regioes) then 
+                            if (kojun i (j + 1) numerosMatriz regioesMatriz regioes) then 
+                                True
+                            else b
+                         else b) 
+                False rangeNums
+
+avaliarNumeros :: Int -> Int
+avaliarNumeros _ = 1
         
-avaliarNumeros :: Int -> Int -> Int -> Int -> [[Int]] -> [[Int]] -> [[(Int, Int)]] -> (Bool, [[Int]])
-avaliarNumeros num maxNum i j numerosMatriz regioesMatriz regioes =
-    if (num > maxNum) then
-        (False, numerosMatriz)
-    else 
-        if (numeroEhPossivel num i j numerosMatriz regioesMatriz regioes) then 
-            let matrizAtualizada = atualizarMatriz num i j numerosMatriz
-                (resultado, matriz) = kojun i (j+1) (matrizAtualizada) regioesMatriz regioes
-            in 
-                if (resultado) then
-                    (resultado, matriz)
-                else
-                    avaliarNumeros (num + 1) maxNum i j numerosMatriz regioesMatriz regioes
-        else
-            avaliarNumeros (num + 1) maxNum i j numerosMatriz regioesMatriz regioes
-            
+        
+
+
 tamanhoRegiao :: [[(Int, Int)]] -> Int -> Int
 tamanhoRegiao regioes idRegiao =
     length (regioes !! idRegiao)
 
 -- TO DO
 numeroEhPossivel :: Int -> Int -> Int -> [[Int]] -> [[Int]] -> [[(Int,Int)]] -> Bool
-numeroEhPossivel _ _ _ _ _ _ = True
+numeroEhPossivel _ _ _ _ _ _ = False
 
     
 main = do
     -- imprimirMatriz matrizRegioes
     -- print (definirRegioes matrizRegioes quantidadeRegioes tamanhoMatriz)
-    print (kojun 0 0 matrizNumerosInicial matrizRegioes (definirRegioes matrizRegioes quantidadeRegioes tamanhoMatriz))
+    -- print (kojun 0 0 matrizNumeros matrizRegioes (definirRegioes matrizRegioes quantidadeRegioes tamanhoMatriz))
+    -- print (tamanhoRegiao (definirRegioes matrizRegioes quantidadeRegioes tamanhoMatriz) 1)
     -- imprimirMatriz (atualizarMatriz 8 5 5 matrizNumeros)
