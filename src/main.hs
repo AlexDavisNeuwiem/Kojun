@@ -1,29 +1,42 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# OPTIONS_GHC -Wno-overlapping-patterns #-}
 {-# HLINT ignore "Use guards" #-}
 {-# HLINT ignore "Redundant if" #-}
 {-# HLINT ignore "Redundant bracket" #-}
 
+import Debug.Trace
+
+debug = flip trace
+
 matrizNumerosInicial :: [[Int]]
-matrizNumerosInicial = [[2,0,0,0,1,0],
-                        [0,0,0,3,0,0],
-                        [0,3,0,0,5,3],
-                        [0,0,0,0,0,0],
-                        [0,0,3,0,4,2],
-                        [0,0,0,0,0,0]]
+matrizNumerosInicial = [[0, 4, 3, 0, 2, 5, 0, 0, 0, 0],
+                        [0, 2, 0, 0, 0, 4, 2, 0, 3, 0],
+                        [0, 0, 0, 1, 4, 0, 0, 1, 0, 0],
+                        [5, 6, 0, 2, 3, 0, 5, 0, 0, 0],
+                        [0, 3, 5, 0, 0, 0, 3, 0, 0, 0],
+                        [0, 0, 0, 7, 0, 7, 0, 5, 0, 4],
+                        [0, 0, 5, 3, 0, 2, 0, 4, 0, 0],
+                        [0, 0, 1, 5, 0, 0, 0, 5, 3, 0],
+                        [1, 3, 7, 0, 0, 0, 6, 0, 0, 5],
+                        [2, 1, 0, 0, 3, 0, 1, 0, 3, 4]]
 
 matrizRegioes :: [[Int]]
-matrizRegioes = [[0 ,0 ,1 ,1 ,1 ,2],
-                 [3 ,3 ,3 ,3 ,3 ,2],
-                 [4 ,5 ,5 ,5 ,3 ,6],
-                 [4 ,4 ,4 ,5 ,6 ,6],
-                 [7 ,7 ,8 ,9 ,9 ,9],
-                 [10,10,8 ,8 ,9 ,9]]
+matrizRegioes = [[0 , 1 , 1 , 1 , 1 , 1 , 2 , 3 , 4 , 4 ],
+                 [0 , 0 , 1 , 1 , 2 , 2 , 2 , 3 , 3 , 5 ],
+                 [0 , 0 , 6 , 6 , 6 , 7 , 8 , 3 , 3 , 5 ],
+                 [6 , 6 , 6 , 12, 12, 7 , 8 , 9 , 10, 11],
+                 [6 , 13, 13, 12, 14, 7 , 8 , 9 , 10, 11],
+                 [13, 13, 14, 14, 14, 15, 8 , 10, 10, 10],
+                 [13, 13, 14, 14, 15, 15, 8 , 8 , 8 , 16],
+                 [17, 17, 14, 18, 15, 15, 15, 15, 16, 16],
+                 [17, 17, 18, 18, 18, 18, 18, 16, 16, 16],
+                 [19, 19, 19, 19, 18, 20, 20, 20, 20, 16]]
 
 tamanhoMatriz :: Int
-tamanhoMatriz = 6
+tamanhoMatriz = length matrizNumerosInicial
 
 quantidadeRegioes :: Int
-quantidadeRegioes = 11
+quantidadeRegioes = maximum (concat matrizRegioes) + 1
 
 imprimirMatriz :: [[Int]] -> IO String
 imprimirMatriz [] = return ""
@@ -69,19 +82,19 @@ kojun i j numerosMatriz regioesMatriz regioes =
         kojun i (j+1) numerosMatriz regioesMatriz regioes
 
     else
-        let maxNum = tamanhoRegiao regioes (matrizRegioes !! i !! j)
+        let maxNum = tamanhoRegiao regioes (regioesMatriz !! i !! j)
         in avaliarNumeros 1 maxNum i j numerosMatriz regioesMatriz regioes
         
 avaliarNumeros :: Int -> Int -> Int -> Int -> [[Int]] -> [[Int]] -> [[(Int, Int)]] -> (Bool, [[Int]])
 avaliarNumeros num maxNum i j numerosMatriz regioesMatriz regioes =
-    if (num > maxNum) then
+    if (num > maxNum) then 
         (False, numerosMatriz)
     else 
         if (numeroEhPossivel num i j numerosMatriz regioesMatriz regioes) then 
             let matrizAtualizada = atualizarMatriz num i j numerosMatriz
                 (resultado, matriz) = kojun i (j+1) (matrizAtualizada) regioesMatriz regioes
             in 
-                if (resultado) then
+                if (resultado) then 
                     (resultado, matriz)
                 else
                     avaliarNumeros (num + 1) maxNum i j numerosMatriz regioesMatriz regioes
@@ -94,11 +107,51 @@ tamanhoRegiao regioes idRegiao =
 
 -- TO DO
 numeroEhPossivel :: Int -> Int -> Int -> [[Int]] -> [[Int]] -> [[(Int,Int)]] -> Bool
-numeroEhPossivel _ _ _ _ _ _ = True
+numeroEhPossivel num i j numerosMatriz regioesMatriz regioes =
+    let regiao = regioes !! (regioesMatriz !! i !! j)
+    in (verificarRegiao num regiao numerosMatriz) && 
+       (verificarAdjacentes num i j numerosMatriz) &&
+       (verificarCima num (i-1) i j numerosMatriz regioesMatriz) &&
+       (verificarBaixo num (i+1) i j numerosMatriz regioesMatriz)
 
-    
+verificarRegiao :: Int  -> [(Int, Int)] -> [[Int]] -> Bool
+verificarRegiao num regiao numerosMatriz =
+    not (any (\(i, j) -> (numerosMatriz !! i !! j) == num) regiao)
+
+verificarAdjacentes :: Int -> Int -> Int -> [[Int]] -> Bool
+verificarAdjacentes num i j numerosMatriz =
+    (not ((i-1 >= 0) && (numerosMatriz !! (i-1) !! j == num))) &&
+    (not ((i+1 < tamanhoMatriz) && (numerosMatriz !! (i+1) !! j == num))) &&
+    (not ((j-1 >= 0) && (numerosMatriz !! i !! (j-1) == num))) &&
+    (not ((j+1 < tamanhoMatriz) && (numerosMatriz !! i) !! (j+1) == num)) 
+
+verificarCima :: Int -> Int -> Int -> Int -> [[Int]] -> [[Int]] -> Bool
+verificarCima num it i j numerosMatriz regioesMatriz =
+    if (it <= -1) then
+        True
+    else if (regioesMatriz !! it !! j) /= (regioesMatriz !! i !! j) then
+        True
+    else
+        if (numerosMatriz !! it !! j) < num then
+            False
+        else
+            verificarCima num (it-1) i j numerosMatriz regioesMatriz
+
+verificarBaixo :: Int -> Int -> Int -> Int -> [[Int]] -> [[Int]] -> Bool
+verificarBaixo num it i j numerosMatriz regioesMatriz =
+    if (it >= tamanhoMatriz) then
+        True
+    else if (regioesMatriz !! it !! j) /= (regioesMatriz !! i !! j) then
+        True
+    else
+        if (numerosMatriz !! it !! j) > num then
+            False
+        else
+            verificarBaixo num (it+1) i j numerosMatriz regioesMatriz
+
 main = do
-    -- imprimirMatriz matrizRegioes
-    -- print (definirRegioes matrizRegioes quantidadeRegioes tamanhoMatriz)
-    print (kojun 0 0 matrizNumerosInicial matrizRegioes (definirRegioes matrizRegioes quantidadeRegioes tamanhoMatriz))
-    -- imprimirMatriz (atualizarMatriz 8 5 5 matrizNumeros)
+    let (ehPossivel, matriz) = kojun 0 0 matrizNumerosInicial matrizRegioes (definirRegioes matrizRegioes quantidadeRegioes tamanhoMatriz)
+    if ehPossivel then
+        imprimirMatriz matriz
+    else
+        putStrLn "Nao ha solucao" >> return ""
