@@ -19,7 +19,7 @@ matrizNumerosInicial = [[0, 4, 3, 0, 2, 5, 0, 0, 0, 0],
                         [1, 3, 7, 0, 0, 0, 6, 0, 0, 5],
                         [2, 1, 0, 0, 3, 0, 1, 0, 3, 4]]
 
--- Matriz que define as regiões do quebra-cabeça. As regiões devem ser representas por inteiros de 0 até n,
+-- Matriz que define as regiões do quebra-cabeça. As regiões devem ser representadas por inteiros de 0 até n,
 -- sendo n a quantidade de regiões - 1. Esses inteiros podem ser considerados o id de cada região.
 matrizRegioes :: [[Int]]
 matrizRegioes = [[0 , 1 , 1 , 1 , 1 , 1 , 2 , 3 , 4 , 4 ],
@@ -48,8 +48,12 @@ quantidadeRegioes = maximum (concat matrizRegioes) + 1
 imprimirMatriz :: [[Int]] -> IO String
 imprimirMatriz [] = return ""
 imprimirMatriz (a:b) = do
-    print a
+    putStrLn (listParaString a)
     imprimirMatriz b
+
+-- Transforma uma lista em String
+listParaString :: [Int] -> String
+listParaString = unwords . map show
 
 -- Dado um número "num" e uma posição da matriz "i j", retorna uma nova matriz com "num" na posicao "i j"
 atualizarMatriz :: Int -> Int -> Int -> [[Int]] -> [[Int]]
