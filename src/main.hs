@@ -154,8 +154,7 @@ numeroEhPossivel num i j numerosMatriz regioesMatriz regioes =
     let regiao = regioes !! (regioesMatriz !! i !! j)
     in (verificarRegiao num regiao numerosMatriz) && 
        (verificarAdjacentes num i j numerosMatriz) &&
-       (verificarCima num (i-1) i j numerosMatriz regioesMatriz) &&
-       (verificarBaixo num (i+1) i j numerosMatriz regioesMatriz)
+       (verificarCimaBaixo num i j numerosMatriz regioesMatriz)
 
 -- Regra 1: uma região precisa ter todos os números de 1 a N sem repetição, sendo N a quantidade de células na região. 
 -- A função verifica se todos os números na casa são diferentes. Como o algoritmo já preenche as casas com números de 
@@ -175,43 +174,22 @@ verificarAdjacentes num i j numerosMatriz =
 
 -- Regra 3: Se duas células estiverem adjacentes verticalmente na mesma região, o número na célula superior deve ser 
 -- maior que o número na célula inferior.
--- Verifica se as células de cima tem valores maiores que o valor da célula i j.
-verificarCima :: Int -> Int -> Int -> Int -> [[Int]] -> [[Int]] -> Bool
-verificarCima num it i j numerosMatriz regioesMatriz =
-    -- Chegou fora da matriz, então já verificou todas casas necessárias
-    if (it <= -1) then
-        True
-    -- Se a casa de cima é de outra região não precisa verificar qual é maior.
-    else if (regioesMatriz !! it !! j) /= (regioesMatriz !! i !! j) then
-        True
-    -- Casa de cima é da mesma região
-    else
-        -- Casa de cima é menor, então é inválido
-        if (numerosMatriz !! it !! j) < num then
-            False
-        -- Casa de cima é válida, verifica a próxima casa também
-        else
-            verificarCima num (it-1) i j numerosMatriz regioesMatriz
-
--- Regra 3: Se duas células estiverem adjacentes verticalmente na mesma região, o número na célula superior deve ser 
--- maior que o número na célula inferior.
--- Verifica se as células de baixo tem valores menores que o valor da célula i j.
-verificarBaixo :: Int -> Int -> Int -> Int -> [[Int]] -> [[Int]] -> Bool
-verificarBaixo num it i j numerosMatriz regioesMatriz =
-    -- Chegou fora da matriz, então já verificou todas casas necessárias
-    if (it >= tamanhoMatriz) then
-        True
-    -- Se a casa de baixo é de outra região não precisa verificar qual é menor.
-    else if (regioesMatriz !! it !! j) /= (regioesMatriz !! i !! j) then
-        True
-    -- Casa de baixo é da mesma região
-    else
-        -- Casa de baixo é maior, então é inválido
-        if (numerosMatriz !! it !! j) > num then
-            False
-        -- Casa de baixo é válida, verifica a próxima casa também
-        else
-            verificarBaixo num (it+1) i j numerosMatriz regioesMatriz
+-- Verifica se as células de cima e de baixo da célula i j seguem a regra 3, ou seja, são decrescentes de cima para baixo.
+verificarCimaBaixo :: Int -> Int -> Int -> [[Int]] -> [[Int]] -> Bool
+verificarCimaBaixo num i j numerosMatriz regioesMatriz =
+    -- Verifica se a casa de cima é da mesma região e é menor, que é inválido
+    not (
+            ((i-1) >= 0) && 
+            ((regioesMatriz !! (i-1) !! j) == (regioesMatriz !! i !! j)) && 
+            ((numerosMatriz !! (i-1) !! j) < num)
+        )
+    &&
+    -- Verifica se a casa de baixo é da mesma região e é maior, que é inválido
+    not (
+            ((i+1) < tamanhoMatriz) && 
+            ((regioesMatriz !! (i+1) !! j) == (regioesMatriz !! i !! j)) && 
+            ((numerosMatriz !! (i+1) !! j) > num)
+        )
 
 -- Função main, chama a função kojun para a matriz de entrada determinada. Imprime na tela o resultado obtido.
 main :: IO String
