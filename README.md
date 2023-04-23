@@ -5,7 +5,7 @@ matriz de números e uma matriz de regiões, conforme indicado no arquivo main.h
 
 ## Compilar e executar
 
-O comando a seguir compila o código, o executa e limpa os binários em apenas uma linha. Ele deve ser executado a partir da pasta raiz do projeto.
+O comando a seguir compila o código, o executa e limpa os binários em apenas uma linha. Ele deve ser executado na pasta raiz do projeto.
 
 ```shell
 ghc -o a src/main.hs && ./a && rm a src/*.hi src/*.o
