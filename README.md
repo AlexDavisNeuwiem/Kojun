@@ -1,7 +1,7 @@
 # kojun
 
 Esse código encontra a solução de um puzzle kojun a partir de uma
-matriz de números e uma matriz de regiões, conforme indicado em "src/main.hs". O código foi escrito na linguagem haskell, utilizando backtracking como estratégia para resolução do problema.
+matriz de números e uma matriz de regiões, conforme indicado em "src/main.hs". O código foi escrito na linguagem haskell, utilizando backtracking como estratégia para resolução do problema. Relatório disponível em "docs/relatorio.pdf".
 
 ## Compilar e executar
 
