@@ -212,8 +212,10 @@ verificarCimaBaixo num i j numerosMatriz regioesMatriz =
 -- Função main, chama a função kojun para a matriz de entrada determinada. Imprime na tela o resultado obtido.
 main :: IO String
 main = do
+    
     let (ehPossivel, matriz) = kojun 0 0 matrizNumerosInicial matrizRegioes (definirRegioes matrizRegioes quantidadeRegioes tamanhoMatriz)
     if ehPossivel then
         imprimirMatriz matriz
     else
         putStrLn "Nao ha solucao" >> return ""
+    
