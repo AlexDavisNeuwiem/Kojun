@@ -29,5 +29,5 @@ python3 python/kojun.py
 
 ## Executar: Elixir
 ```shell
-elixir elixir/kojun.ex
+elixir elixir/kojun.exs
 ```
