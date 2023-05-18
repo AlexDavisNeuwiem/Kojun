@@ -27,7 +27,7 @@ ghc -o a haskell/kojun.hs && ./a && rm a haskell/*.hi haskell/*.o
 python3 python/kojun.py
 ```
 
-##Executar: Elixir
+## Executar: Elixir
 ```shell
 elixir elixir/kojun.ex
 ```
