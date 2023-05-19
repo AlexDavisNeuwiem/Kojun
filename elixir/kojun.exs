@@ -88,7 +88,7 @@ defmodule Kj do
 
   end
 
-  def tamanhoRegiao(regioes, idRegiao), do: regioes[idRegiao] |> length()
+  def tamanhoRegiao(regioes, idRegiao), do: Enum.at(regioes, idRegiao) |> length()
 
 
   # Função principal da solução. Retorna uma tupla (resultado, matriz) em que resultado é um boolean que
