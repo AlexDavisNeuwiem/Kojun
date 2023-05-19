@@ -91,7 +91,7 @@ defmodule Kj do
   def atualizarRegiao(regioes_matriz, {i,j}, regioes) do
 
     idRegiao = Enum.at(Enum.at(regioes_matriz,i),j)
-    regiao_atualizada = [{i, j} | Enum.at(regioes,idRegiao)] #erro aqui
+    regiao_atualizada = Enum.at(regioes, idRegiao) ++ [{i, j}]
     List.replace_at(regioes, idRegiao, regiao_atualizada)
 
   end
