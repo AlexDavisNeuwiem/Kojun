@@ -166,7 +166,8 @@ defmodule Kj do
   # A função verifica se todos os números na casa são diferentes. Como o algoritmo já preenche as casas com números de
   #1 a N, não é necessário verificcar se os números da casa estão nesse intervalo.
   def verificarRegiao(num, regiao, numerosMatriz) do
-    not (Enum.any?(regiao, fn(i,j) -> (Enum.at(Enum.at(numerosMatriz,i),j == num)) end))
+    anonima = fn({i,j}) -> (Enum.at(Enum.at(numerosMatriz,i),j) == num) end
+    not (Enum.any?(regiao, anonima))
   end
 
 
