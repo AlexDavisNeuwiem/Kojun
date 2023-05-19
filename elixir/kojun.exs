@@ -99,10 +99,85 @@ defmodule Kj do
   def tamanhoRegiao(regioes, idRegiao), do: regioes[idRegiao] |> length()
 
 
+  #Função principal da solução. Retorna uma tupla (resultado, matriz) em que resultado é um boolean que
+  #indica se existe solução e matriz é a matriz dos números após a computação.
+  #A função rececbe uma posição "i j" e, caso esteja vazia, procura um número válido para ocupá-la,
+  #por meio da função "avaliarNumeros"
+  def kojun(i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
+    cond do
+      #Percorreu a matriz inteira sem achar erros
+      (i == tamanhoMatriz - 1) and (j == tamanhoMatriz) ->
+        {True, numerosMatriz}
+
+      #Terminou a linha
+      (j == tamanhoMatriz) ->
+        kojun((i+1), 0, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz)
+
+      #Posição já está ocupada
+      (Enum.at(Enum.at(numerosMatriz, i), j) > 0) ->
+        kojun(i, (j+1), numerosMatriz, regioesMatriz, regioes, tamanhoMatriz)
+
+      #Posição válida e vazia, procura um número para ocupá-la
+      true ->
+        maxNum = tamanhoRegiao(regioes, Enum.at(Enum.at(regioesMatriz, i), j))
+        #Começa avaliando a partir do maior número possível da região (segundo parâmetro)
+        avaliarNumeros(maxNum, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz)
+    end
+  end
+
+
+  #Essa função tenta ocupar a posição i j com o número passado de parâmetro. Caso não consiga, tenta o próximo
+  #número. Utiliza a função "numeroEhPossivel" para verificar se o número é válido para aquela casa. Caso consiga
+  #um número válido, atualiza a matriz e chama o método para a próxima posição da matriz. É aqui que acontece o
+  #backtracking. Caso uma posição tenha tentado todos os números possíveis e nenhum foi válido, significa que
+  #aconteceu pelo menos um erro nos números definidos anteriormente, então retornará false. Assim, mudará o número
+  #da posição anterior, já que o algoritmo é recursivo. Se também não encontrar um número válido, também retornará
+  #false e voltará para a posição anterior para procurar um novo número. O processo continua até que seja encontrada
+  #uma solução em que todas as casas tenham números válidos.
+  def avaliarNumeros(num, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
+    #Tentou todos os números e não encontrou nenhum válido
+    if (num <= 0) do
+      {False, numerosMatriz}
+    else
+      #Número é válido para posição i j
+      if numeroEhPossivel(num, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
+        matrizAtualizada = atualizarMatriz(num, i, j, numerosMatriz)
+        #Tenta preencher a próxima posição da matriz, chamando a função "kojun"
+        {resultado, matriz} = kojun(i, (j+1), matrizAtualizada, regioesMatriz, regioes, tamanhoMatriz)
+
+        #Se o resultado do teste da próxima posição é válido, a posição atual também é válida.
+        if (resultado) do
+          {resultado, matriz}
+        #Teste da próxima posição retornou inválido, tentar outro número para posição atual.
+        else
+          avaliarNumeros((num - 1), i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz)
+        end
+      #Número não é válido, tentará o próximo número
+      else
+        avaliarNumeros((num - 1), i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz)
+      end
+
+    end
+  end
+
+  #Aplica as regras do kojun para verificar se "num" é válido na posição "i j". Caso todos os testes retornem
+  #como True, a posição é válida, então realiza AND entre os resultados dos testes.
+  def numeroEhpossivel(num, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
+    regiao = Enum.at(regioes, Enum.at(Enum.at(regioesMatriz, i), j))
+
+    verificarRegiao(num, regiao, numerosMatriz, tamanhoMatriz) and
+    verificarAdjacentes(num, i, j, numerosMatriz, tamanhoMatriz) and
+    verificarCimaBAixo(num, i, j, numerosMatriz, regioesMatriz, tamanhoMatriz)
+  end
+
+
+
+
+
 
 end
 
 
 IO.inspect Kj.definirRegioes(matrizRegioes, Kj.quantidadeRegioes(matrizRegioes), tamanhoMatriz)
 
-#CONTINUAR A PARTIR DA LINHA 112 DO CÓDIGO .hs
+#CONTINUAR A PARTIR DA LINHA 177 DO CÓDIGO .hs
