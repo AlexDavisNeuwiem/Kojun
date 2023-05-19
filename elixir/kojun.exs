@@ -51,7 +51,7 @@ defmodule Kj do
   def imprimirMatriz(matriz), do: IO.inspect matriz
 
   #Dado um número "num" e uma posição da matriz "i j", retorna uma nova matriz com "num" na posicao "i j"
-  def atualizarMatriz(matriz, num, i, j) do
+  def atualizarMatriz(num, i, j, matriz) do
     linha = Enum.at(matriz, i)      #Enum.at pega a linha atual
     linha_atualizada = List.replace_at(linha, j, num)
     List.replace_at(matriz, i, linha_atualizada)
