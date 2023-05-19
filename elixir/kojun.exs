@@ -36,16 +36,8 @@ matrizRegioes = [[0 , 1 , 1 , 1 , 1 , 2 , 3 , 4 , 4 , 5 , 6 , 6 , 7 , 7 , 8 , 9 
                  [50, 50, 51, 52, 52, 53, 53, 59, 55, 55, 56, 56, 56, 57, 60, 58, 58],
                  [50, 50, 61, 61, 52, 53, 53, 59, 55, 55, 56, 62, 62, 57, 60, 60, 63],
                  [61, 61, 61, 61, 52, 52, 53, 53, 55, 55, 56, 56, 62, 60, 60, 60, 60]]
-#matrizRegioes = [[0,0,1,1,1,2],
-#                  [3,3,3,3,3,2],
-#                  [4,5,5,5,3,6],
-#                  [4,4,4,5,6,6],
-#                  [7,7,8,9,9,9],
-#                  [10,10,8,8,9,9]]
 
 
-
-#tamanhoMatriz = 6
 tamanhoMatriz = length(matrizNumerosInicial)
 
 #Kj de KoJun
@@ -140,7 +132,7 @@ defmodule Kj do
       {False, numerosMatriz}
     else
       # Número é válido para posição i j
-      if numeroEhPossivel(num, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
+      if numeroEhpossivel(num, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
         matrizAtualizada = atualizarMatriz(num, i, j, numerosMatriz)
         # Tenta preencher a próxima posição da matriz, chamando a função "kojun"
         {resultado, matriz} = kojun(i, (j+1), matrizAtualizada, regioesMatriz, regioes, tamanhoMatriz)
@@ -209,10 +201,8 @@ defmodule Kj do
 
 end
 
-
-
 {ehPossivel, matriz} = Kj.kojun(0, 0, matrizNumerosInicial, matrizRegioes,
-                          Kj.definirRegioes(matrizRegioes,Kj.quantidadeRegioes(matrizRegioes), tamanhoMatriz), tamanhoMatriz)
+          Kj.definirRegioes(matrizRegioes,Kj.quantidadeRegioes(matrizRegioes), tamanhoMatriz), tamanhoMatriz)
 
 if (ehPossivel) do
   Kj.imprimirMatriz(matriz)
