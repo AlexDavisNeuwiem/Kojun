@@ -66,20 +66,20 @@ defmodule Kj do
   end
 
 
-  #A partir da matriz de regiões cria uma lista de listas em que cada lista interna representa uma região.
-  #Cada lista de região conterá as coordenadas, representadas por tuplas (i, j) das células que a compõe.
-  #Por exemplo: considerando uma matriz 2x2 com 2 regiões, em que as células da esquerda são da região 0
+  # A partir da matriz de regiões cria uma lista de listas em que cada lista interna representa uma região.
+  # Cada lista de região conterá as coordenadas, representadas por tuplas (i, j) das células que a compõe.
+  # Por exemplo: considerando uma matriz 2x2 com 2 regiões, em que as células da esquerda são da região 0
   #e as células da direita são da região 1, esse método gerará a seguinte estrutura:
   #[ [(0,0), (1,0)], [(0,1), (1,1)] ]
-  #Essa estrutura facilita a verificação das células pertencentes a uma determinada região
-  #Inicialmente cria uma lista com "quantidadeRegioes" listas vazias. Depois a preenche com a função atualizarRegioes
+  # Essa estrutura facilita a verificação das células pertencentes a uma determinada região
+  # Inicialmente cria uma lista com "quantidadeRegioes" listas vazias. Depois a preenche com a função atualizarRegioes
   def definirRegioes(regioesMatriz, qtdadeRegioes, tamanhoMatriz) do
     regioes = List.duplicate([], qtdadeRegioes)
     atualizarRegioes(regioesMatriz, regioes, tamanhoMatriz)
   end
 
 
-  #Cria uma lista com todas coordenadas (i, j) e, com a função Enum.reduce do haskell, pega cada posição (i, j)
+  # Cria uma lista com todas coordenadas (i, j) e, com a função Enum.reduce do haskell, pega cada posição (i, j)
   #e aplica a função "atualizarRegiao", usando a lista de regioes como valor inicial.
 
   def atualizarRegioes(regioes_matriz, regioes, tamanho_matriz) do
@@ -87,7 +87,7 @@ defmodule Kj do
     Enum.reduce(coordenadas, regioes, &atualizarRegiao(regioes_matriz, &1, &2))
   end
 
-  #Adiciona uma posição (i, j) na lista de sua região. Depois adiciona a lista da região atualizada na lista de regioes.
+  # Adiciona uma posição (i, j) na lista de sua região. Depois adiciona a lista da região atualizada na lista de regioes.
   def atualizarRegiao(regioes_matriz, {i,j}, regioes) do
 
     idRegiao = Enum.at(Enum.at(regioes_matriz,i),j)
@@ -99,34 +99,34 @@ defmodule Kj do
   def tamanhoRegiao(regioes, idRegiao), do: regioes[idRegiao] |> length()
 
 
-  #Função principal da solução. Retorna uma tupla (resultado, matriz) em que resultado é um boolean que
+  # Função principal da solução. Retorna uma tupla (resultado, matriz) em que resultado é um boolean que
   #indica se existe solução e matriz é a matriz dos números após a computação.
-  #A função rececbe uma posição "i j" e, caso esteja vazia, procura um número válido para ocupá-la,
+  # A função rececbe uma posição "i j" e, caso esteja vazia, procura um número válido para ocupá-la,
   #por meio da função "avaliarNumeros"
   def kojun(i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
     cond do
-      #Percorreu a matriz inteira sem achar erros
+      # Percorreu a matriz inteira sem achar erros
       (i == tamanhoMatriz - 1) and (j == tamanhoMatriz) ->
         {True, numerosMatriz}
 
-      #Terminou a linha
+      # Terminou a linha
       (j == tamanhoMatriz) ->
         kojun((i+1), 0, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz)
 
-      #Posição já está ocupada
+      # Posição já está ocupada
       (Enum.at(Enum.at(numerosMatriz, i), j) > 0) ->
         kojun(i, (j+1), numerosMatriz, regioesMatriz, regioes, tamanhoMatriz)
 
-      #Posição válida e vazia, procura um número para ocupá-la
+      # Posição válida e vazia, procura um número para ocupá-la
       true ->
         maxNum = tamanhoRegiao(regioes, Enum.at(Enum.at(regioesMatriz, i), j))
-        #Começa avaliando a partir do maior número possível da região (segundo parâmetro)
+        # Começa avaliando a partir do maior número possível da região (segundo parâmetro)
         avaliarNumeros(maxNum, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz)
     end
   end
 
 
-  #Essa função tenta ocupar a posição i j com o número passado de parâmetro. Caso não consiga, tenta o próximo
+  # Essa função tenta ocupar a posição i j com o número passado de parâmetro. Caso não consiga, tenta o próximo
   #número. Utiliza a função "numeroEhPossivel" para verificar se o número é válido para aquela casa. Caso consiga
   #um número válido, atualiza a matriz e chama o método para a próxima posição da matriz. É aqui que acontece o
   #backtracking. Caso uma posição tenha tentado todos os números possíveis e nenhum foi válido, significa que
@@ -135,24 +135,24 @@ defmodule Kj do
   #false e voltará para a posição anterior para procurar um novo número. O processo continua até que seja encontrada
   #uma solução em que todas as casas tenham números válidos.
   def avaliarNumeros(num, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
-    #Tentou todos os números e não encontrou nenhum válido
+    # Tentou todos os números e não encontrou nenhum válido
     if (num <= 0) do
       {False, numerosMatriz}
     else
-      #Número é válido para posição i j
+      # Número é válido para posição i j
       if numeroEhPossivel(num, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
         matrizAtualizada = atualizarMatriz(num, i, j, numerosMatriz)
-        #Tenta preencher a próxima posição da matriz, chamando a função "kojun"
+        # Tenta preencher a próxima posição da matriz, chamando a função "kojun"
         {resultado, matriz} = kojun(i, (j+1), matrizAtualizada, regioesMatriz, regioes, tamanhoMatriz)
 
-        #Se o resultado do teste da próxima posição é válido, a posição atual também é válida.
+        # Se o resultado do teste da próxima posição é válido, a posição atual também é válida.
         if (resultado) do
           {resultado, matriz}
-        #Teste da próxima posição retornou inválido, tentar outro número para posição atual.
+        #T este da próxima posição retornou inválido, tentar outro número para posição atual.
         else
           avaliarNumeros((num - 1), i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz)
         end
-      #Número não é válido, tentará o próximo número
+      # úmero não é válido, tentará o próximo número
       else
         avaliarNumeros((num - 1), i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz)
       end
@@ -160,24 +160,68 @@ defmodule Kj do
     end
   end
 
-  #Aplica as regras do kojun para verificar se "num" é válido na posição "i j". Caso todos os testes retornem
+  # Aplica as regras do kojun para verificar se "num" é válido na posição "i j". Caso todos os testes retornem
   #como True, a posição é válida, então realiza AND entre os resultados dos testes.
   def numeroEhpossivel(num, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
     regiao = Enum.at(regioes, Enum.at(Enum.at(regioesMatriz, i), j))
 
-    verificarRegiao(num, regiao, numerosMatriz, tamanhoMatriz) and
+    verificarRegiao(num, regiao, numerosMatriz) and
     verificarAdjacentes(num, i, j, numerosMatriz, tamanhoMatriz) and
     verificarCimaBAixo(num, i, j, numerosMatriz, regioesMatriz, tamanhoMatriz)
   end
 
+  # Regra 1: uma região precisa ter todos os números de 1 a N sem repetição, sendo N a quantidade de células na região.
+  # A função verifica se todos os números na casa são diferentes. Como o algoritmo já preenche as casas com números de
+  #1 a N, não é necessário verificcar se os números da casa estão nesse intervalo.
+  def verificarRegiao(num, regiao, numerosMatriz) do
+    not (Enum.any?(regiao, fn(i,j) -> (Enum.at(Enum.at(numerosMatriz,i),j == num)) end))
+  end
 
 
+  # Regra 2: Números em células ortogonalmente adjacentes devem ser diferentes.
+  # Verifica se os números das células de cima, baixo, direita e esquerda são diferentes do número da célula i j.
+  def verificarAdjacentes(num, i, j, numerosMatriz, tamanhoMatriz) do
+    (not ((i-1 >= 0) and (Enum.at(Enum.at(numerosMatriz, (i-1)), j) == num))) and
+    (not ((i+1 < tamanhoMatriz) and (Enum.at(Enum.at(numerosMatriz, (i+1)), j) == num))) and
+    (not ((j-1 >= 0) and (Enum.at(Enum.at(numerosMatriz, i), (j-1)) == num))) and
+    (not ((j+1 < tamanhoMatriz) and (Enum.at(Enum.at(numerosMatriz, i), (j+1)) == num)))
+  end
 
 
+  # Regra 3: Se duas células estiverem adjacentes verticalmente na mesma região, o número na célula superior deve ser
+  #maior que o número na célula inferior.
+  # Verifica se as células de cima e de baixo da célula i j seguem a regra 3, ou seja, são decrescentes de cima para baixo.
+  def verificarCimaBaixo(num, i, j, numerosMatriz, regioesMatriz, tamanhoMatriz) do
+    #Verifica se a casa de cima é da mesma região e é menor, que é inválido.
+    not (
+
+    ) and
+    #Verifica se a casa de baixo é da mesma região e é maior, que é inválido
+    not (
+
+    )
+
+  end
+
+  """
+    -- Verifica se a casa de cima é da mesma região e é menor, que é inválido
+    not (
+            ((i-1) >= 0) &&
+            ((regioesMatriz !! (i-1) !! j) == (regioesMatriz !! i !! j)) &&
+            ((numerosMatriz !! (i-1) !! j) < num)
+        )
+    &&
+    -- Verifica se a casa de baixo é da mesma região e é maior, que é inválido
+    not (
+            ((i+1) < tamanhoMatriz) &&
+            ((regioesMatriz !! (i+1) !! j) == (regioesMatriz !! i !! j)) &&
+            ((numerosMatriz !! (i+1) !! j) > num)
+        )
+  """
 
 end
 
 
 IO.inspect Kj.definirRegioes(matrizRegioes, Kj.quantidadeRegioes(matrizRegioes), tamanhoMatriz)
 
-#CONTINUAR A PARTIR DA LINHA 177 DO CÓDIGO .hs
+#CONTINUAR A PARTIR DA LINHA 184 DO CÓDIGO .hs
