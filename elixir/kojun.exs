@@ -106,7 +106,7 @@ defmodule Kj do
     cond do
       # Percorreu a matriz inteira sem achar erros
       (i == tamanhoMatriz - 1) and (j == tamanhoMatriz) ->
-        {True, numerosMatriz}
+        {true, numerosMatriz}
 
       # Terminou a linha
       (j == tamanhoMatriz) ->
