@@ -38,6 +38,7 @@ matrizRegioes = [[0 , 1 , 1 , 1 , 1 , 2 , 3 , 4 , 4 , 5 , 6 , 6 , 7 , 7 , 8 , 9 
                  [61, 61, 61, 61, 52, 52, 53, 53, 55, 55, 56, 56, 62, 60, 60, 60, 60]]
 
 
+
 tamanhoMatriz = length(matrizNumerosInicial)
 
 #Kj de KoJun
@@ -79,8 +80,7 @@ defmodule Kj do
     atualizarRegioes(regioesMatriz, regioes, tamanhoMatriz)
   end
 
-
-  # Cria uma lista com todas coordenadas (i, j) e, com a função Enum.reduce do haskell, pega cada posição (i, j)
+  # Cria uma lista com todas coordenadas (i, j) e, com a função Enum.reduce do Elixir, pega cada posição (i, j)
   #e aplica a função "atualizarRegiao", usando a lista de regioes como valor inicial.
 
   def atualizarRegioes(regioes_matriz, regioes, tamanho_matriz) do
@@ -90,11 +90,9 @@ defmodule Kj do
 
   # Adiciona uma posição (i, j) na lista de sua região. Depois adiciona a lista da região atualizada na lista de regioes.
   def atualizarRegiao(regioes_matriz, {i,j}, regioes) do
-
     idRegiao = Enum.at(Enum.at(regioes_matriz,i),j)
     regiao_atualizada = Enum.at(regioes, idRegiao) ++ [{i, j}]
     List.replace_at(regioes, idRegiao, regiao_atualizada)
-
   end
 
   def tamanhoRegiao(regioes, idRegiao), do: Enum.at(regioes, idRegiao) |> length()
