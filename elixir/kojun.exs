@@ -48,7 +48,16 @@ defmodule Kj do
     matriz |> List.flatten() |> Enum.max() |> Kernel.+(1)
   end
 
-  def imprimirMatriz(matriz), do: IO.inspect matriz
+  def imprimirMatriz(matriz) do
+    if matriz == [] do
+      ""
+    else
+      [head | tail] = matriz
+      IO.puts(Enum.join(head," "))
+      imprimirMatriz(tail)
+    end
+  end
+
 
   #Dado um número "num" e uma posição da matriz "i j", retorna uma nova matriz com "num" na posicao "i j"
   def atualizarMatriz(num, i, j, matriz) do
@@ -129,7 +138,7 @@ defmodule Kj do
   def avaliarNumeros(num, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
     # Tentou todos os números e não encontrou nenhum válido
     if (num <= 0) do
-      {False, numerosMatriz}
+      {false, numerosMatriz}
     else
       # Número é válido para posição i j
       if numeroEhpossivel(num, i, j, numerosMatriz, regioesMatriz, regioes, tamanhoMatriz) do
