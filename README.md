@@ -13,7 +13,7 @@ indicado.
 
 A saída é impressa no terminal. No caso de sucesso, é a matriz resolvida. Caso não encontre solução, é "Nao ha solucao".
 
-## Executar: python
+## Executar: Python
 
 ```shell
 python3 python/kojun.py
