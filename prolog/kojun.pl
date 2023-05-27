@@ -38,7 +38,4 @@ matrizRegioes( [[0 , 1 , 1 , 1 , 1 , 2 , 3 , 4 , 4 , 5 , 6 , 6 , 7 , 7 , 8 , 9 ,
                 [50, 50, 61, 61, 52, 53, 53, 59, 55, 55, 56, 62, 62, 57, 60, 60, 63],
                 [61, 61, 61, 61, 52, 52, 53, 53, 55, 55, 56, 56, 62, 60, 60, 60, 60]] ).
 
-length_of(Quantidade, Lista) :- length(Lista, Quantidade).
-size(Matriz, Linhas, Colunas) :- length(Matriz, Linhas), maplist(length_of(Colunas), Matriz).
-
-tamanhoMatriz(Linhas) :- matrizNumerosInicial(Matriz), size(Matriz, Linhas, Colunas).
+tamanhoMatriz(Tamanho) :- matrizNumerosInicial(Matriz), length(Matriz, Tamanho).
