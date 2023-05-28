@@ -4,6 +4,7 @@
 
 /* A Matriz a seguir contém todos os valores do puzzle, sendo 0 uma região vazia */
 /* Toda matriz utilizada nesta solução é uma lista de listas */
+/*
 matrizNumerosInicial(  [[0, 0, 3, 0, 2, 0, 3, 0, 0, 0, 7, 0, 0, 5, 0, 3, 6], 
                         [0, 0, 0, 0, 0, 2, 0, 6, 0, 2, 0, 0, 3, 0, 0, 2, 0], 
                         [0, 2, 0, 0, 0, 0, 0, 0, 4, 0, 5, 1, 0, 2, 0, 0, 0], 
@@ -22,7 +23,6 @@ matrizNumerosInicial(  [[0, 0, 3, 0, 2, 0, 3, 0, 0, 0, 7, 0, 0, 5, 0, 3, 6],
                         [0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0], 
                         [6, 2, 0, 0, 1, 3, 1, 7, 1, 2, 0, 4, 0, 4, 1, 0, 6]] ).
 
-/* A Matriz a seguir registra todas as regiões do puzzle */
 matrizRegioes( [[0 , 1 , 1 , 1 , 1 , 2 , 3 , 4 , 4 , 5 , 6 , 6 , 7 , 7 , 8 , 9 , 9 ],
                 [10, 11, 11, 12, 3 , 3 , 3 , 13, 13, 13, 6 , 6 , 6 , 7 , 7 , 9 , 9 ],
                 [10, 10, 12, 12, 14, 14, 14, 13, 13, 13, 6 , 6 , 7 , 7 , 9 , 9 , 9 ],
@@ -41,6 +41,25 @@ matrizRegioes( [[0 , 1 , 1 , 1 , 1 , 2 , 3 , 4 , 4 , 5 , 6 , 6 , 7 , 7 , 8 , 9 ,
                 [50, 50, 61, 61, 52, 53, 53, 59, 55, 55, 56, 62, 62, 57, 60, 60, 63],
                 [61, 61, 61, 61, 52, 52, 53, 53, 55, 55, 56, 56, 62, 60, 60, 60, 60]] ).
 
+*/
+
+matrizNumerosInicial(  [[2,0,0,0,1,0],
+                        [0,0,0,3,0,0],
+                        [0,3,0,0,5,3],
+                        [0,0,0,0,0,0],
+                        [0,0,3,0,4,2],
+                        [0,0,0,0,0,0]] ).
+
+matrizRegioes( [[0 ,0 ,1 ,1 ,1 ,2],
+                [3 ,3 ,3 ,3 ,3 ,2],
+                [4 ,5 ,5 ,5 ,3 ,6],
+                [4 ,4 ,4 ,5 ,6 ,6],
+                [7 ,7 ,8 ,9 ,9 ,9],
+                [10,10,8 ,8 ,9 ,9]] ).
+
+
+matrizTeste([[],[],[],[],[],[],[],[],[],[]]).
+
 /* Utilizando a função "length" para obter o tamanho da matriz */
 tamanhoMatriz(Tamanho) :- matrizNumerosInicial(Matriz), length(Matriz, Tamanho).
 
@@ -50,21 +69,49 @@ maximoMatriz(Matriz, Quantidade) :- maplist(max_list, Matriz, Maximo), max_list(
 quantidadeRegioes(Quantidade) :- matrizRegioes(Matriz), maximoMatriz(Matriz, Quantidade).
 
 /* Usando recursividade para imprimir cada linha de uma matriz */
-imprimirLinhas([]).
-imprimirLinhas([H|T]) :- write(H), nl, imprimirLinhas(T).
-imprimirMatriz() :- matrizNumerosInicial(Matriz), imprimirLinhas(Matriz).
+imprimirMatriz([]).
+imprimirMatriz([H|T]) :- write(H), nl, imprimirMatriz(T).
+%>> testeImprimirMatriz() :- matrizNumerosInicial(Matriz), imprimirLinhas(Matriz).
 
 /* A função "nth0" retorna o enésimo valor de uma lista  */
-buscarPosicao(Matriz, Linha, Coluna, Valor) :- nth0(Linha, Matriz, Lista), nth0(Coluna, Lista, Valor).
-buscarMatriz(Linha, Coluna, Valor) :- matrizNumerosInicial(Matriz), buscarPosicao(Matriz, Linha, Coluna, Valor).
+buscarMatriz(Matriz, Linha, Coluna, Valor) :- nth0(Linha, Matriz, Lista), nth0(Coluna, Lista, Valor).
+testeBuscarMatriz(Linha, Coluna, Valor) :- matrizNumerosInicial(Matriz), buscarMatriz(Matriz, Linha, Coluna, Valor).
 
 /* Percorre a lista até Posicao - 1 (length), atualiza o valor e armazena em Lista2 */
 atualizarPosicao(Posicao, ValorAntigo, ValorNovo, Lista1, Lista2) :- 
     length(Pos, Posicao),
     append(Pos, [ValorAntigo|Resto], Lista1),
     append(Pos, [ValorNovo|Resto], Lista2).
+
 /* Faz o mesmo que a função anterior, mas em uma lista de listas */
-atualizarValor(Matriz, I, J, ValorNovo, NovaMatriz) :-
+atualizarMatriz(Matriz, I, J, ValorNovo, NovaMatriz) :-
     atualizarPosicao(I, Antigo, Novo, Matriz, NovaMatriz),
     atualizarPosicao(J, _Antigo, ValorNovo, Antigo, Novo).
-atualizarMatriz(Linha, Coluna, Valor, NovaMatriz) :- matrizNumerosInicial(Matriz), atualizarValor(Matriz, Linha, Coluna, Valor, NovaMatriz).
+testeAtualizarMatriz(Linha, Coluna, Valor, NovaMatriz) :- matrizNumerosInicial(Matriz), atualizarMatriz(Matriz, Linha, Coluna, Valor, NovaMatriz).
+
+/*  */
+tamanhoRegiao(Regioes, IdRegiao, Tamanho) :- nth0(IdRegiao, Regioes, Lista), length(Lista, Tamanho), !.
+testeTamanhoRegiao(IdRegiao, Tamanho) :- matrizNumerosInicial(Regioes), tamanhoRegiao(Regioes, IdRegiao, Tamanho).
+
+/*  */
+atualizarRegiao(RegioesMatriz, I, J, Regioes, NovaRegioes) :- 
+    buscarMatriz(RegioesMatriz, I, J, IdRegiao), 
+    nth0(IdRegiao, Regioes, Regiao),
+    append(Regiao, [[I, J]], NovaRegiao),
+    atualizarPosicao(IdRegiao, Regiao, NovaRegiao, Regioes, NovaRegioes).
+testeAtualizarRegiao(I, J, NovaMatrizTeste) :- matrizTeste(MatrizTes), matrizRegioes(MatrizReg), atualizarRegiao(MatrizReg, I, J, MatrizTes, NovaMatrizTeste).
+
+/*  */
+atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Regioes, I, J, Resultado) :-
+    I =:= QuantidadeRegioes - 1 -> halt;
+    J =:= QuantidadeRegioes - 1 -> I2 is I + 1, atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Regioes, I2, 0, Resultado);
+    atualizarRegiao(MatrizRegioes, I, J, Regioes, Resultado),
+    J2 is J + 1,
+    atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Resultado, I, J2, Resultado).
+
+/*  */
+definirRegioes(Resultado) :- 
+    matrizRegioes(MatrizRegioes), 
+    quantidadeRegioes(QuantidadeRegioes), 
+    length(Regioes, QuantidadeRegioes), 
+    atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Regioes, 0, 0, Resultado).
