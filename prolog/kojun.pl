@@ -71,7 +71,7 @@ quantidadeRegioes(Quantidade) :- matrizRegioes(Matriz), maximoMatriz(Matriz, Qua
 /* Usando recursividade para imprimir cada linha de uma matriz */
 imprimirMatriz([]).
 imprimirMatriz([H|T]) :- write(H), nl, imprimirMatriz(T).
-%>> testeImprimirMatriz() :- matrizNumerosInicial(Matriz), imprimirLinhas(Matriz).
+testeImprimirMatriz() :- matrizNumerosInicial(Matriz), imprimirMatriz(Matriz).
 
 /* A função "nth0" retorna o enésimo valor de uma lista  */
 buscarMatriz(Matriz, Linha, Coluna, Valor) :- nth0(Linha, Matriz, Lista), nth0(Coluna, Lista, Valor).
