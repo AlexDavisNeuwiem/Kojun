@@ -101,17 +101,27 @@ atualizarRegiao(RegioesMatriz, I, J, Regioes, NovaRegioes) :-
     atualizarPosicao(IdRegiao, Regiao, NovaRegiao, Regioes, NovaRegioes).
 testeAtualizarRegiao(I, J, NovaMatrizTeste) :- matrizTeste(MatrizTes), matrizRegioes(MatrizReg), atualizarRegiao(MatrizReg, I, J, MatrizTes, NovaMatrizTeste).
 
+
 /*  */
 atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Regioes, I, J, Resultado) :-
-    I =:= QuantidadeRegioes - 1 -> halt;
-    J =:= QuantidadeRegioes - 1 -> I2 is I + 1, atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Regioes, I2, 0, Resultado);
-    atualizarRegiao(MatrizRegioes, I, J, Regioes, Resultado),
+    I =:= QuantidadeRegioes -> halt;
+
+    J =:= QuantidadeRegioes -> I2 is I + 1, 
+    atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Regioes, I2, 0, Resultado);
+
+    atualizarRegiao(MatrizRegioes, I, J, Regioes, NovaRegioes),
     J2 is J + 1,
-    atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Resultado, I, J2, Resultado).
+    atualizarRegioes(MatrizRegioes, QuantidadeRegioes, NovaRegioes, I, J2, NovaRegioes).
+
+
+gerarLista(Tamanho, Lista) :- length(Lista, Tamanho).
+gerarMatriz(Colunas, Linhas, Matriz) :-
+    gerarLista(Linhas, Matriz),
+    maplist(gerarLista(Colunas), Matriz).
 
 /*  */
 definirRegioes(Resultado) :- 
     matrizRegioes(MatrizRegioes), 
     quantidadeRegioes(QuantidadeRegioes), 
-    length(Regioes, QuantidadeRegioes), 
+    gerarMatriz(1, QuantidadeRegioes, Regioes),
     atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Regioes, 0, 0, Resultado).
