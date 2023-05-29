@@ -57,16 +57,13 @@ matrizRegioes( [[0 ,0 ,1 ,1 ,1 ,2],
                 [7 ,7 ,8 ,9 ,9 ,9],
                 [10,10,8 ,8 ,9 ,9]] ).
 
-
-matrizTeste([[],[],[],[],[],[],[],[],[],[]]).
-
 /* Utilizando a função "length" para obter o tamanho da matriz */
 tamanhoMatriz(Tamanho) :- matrizNumerosInicial(Matriz), length(Matriz, Tamanho).
 
 /* A função "maplist" aplica "max_list" para cada lista em uma lista da matriz */
 /* A função "max_list" retorna o maior elemento de uma lista */
-maximoMatriz(Matriz, Quantidade) :- maplist(max_list, Matriz, Maximo), max_list(Maximo, Quantidade).
-quantidadeRegioes(Quantidade) :- matrizRegioes(Matriz), maximoMatriz(Matriz, Quantidade).
+maximoMatriz(Matriz, Maximo) :- maplist(max_list, Matriz, ListaMaximos), max_list(ListaMaximos, Maximo).
+quantidadeRegioes(Quantidade) :- matrizRegioes(Matriz), maximoMatriz(Matriz, Maximo), Quantidade is Maximo + 1.
 
 /* Usando recursividade para imprimir cada linha de uma matriz */
 imprimirMatriz([]).
@@ -94,34 +91,22 @@ tamanhoRegiao(Regioes, IdRegiao, Tamanho) :- nth0(IdRegiao, Regioes, Lista), len
 testeTamanhoRegiao(IdRegiao, Tamanho) :- matrizNumerosInicial(Regioes), tamanhoRegiao(Regioes, IdRegiao, Tamanho).
 
 /*  */
-atualizarRegiao(RegioesMatriz, I, J, Regioes, NovaRegioes) :- 
-    buscarMatriz(RegioesMatriz, I, J, IdRegiao), 
-    nth0(IdRegiao, Regioes, Regiao),
-    append(Regiao, [[I, J]], NovaRegiao),
-    atualizarPosicao(IdRegiao, Regiao, NovaRegiao, Regioes, NovaRegioes).
-testeAtualizarRegiao(I, J, NovaMatrizTeste) :- matrizTeste(MatrizTes), matrizRegioes(MatrizReg), atualizarRegiao(MatrizReg, I, J, MatrizTes, NovaMatrizTeste).
-
-
-/*  */
-atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Regioes, I, J, Resultado) :-
-    I =:= QuantidadeRegioes -> halt;
-
-    J =:= QuantidadeRegioes -> I2 is I + 1, 
-    atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Regioes, I2, 0, Resultado);
-
-    atualizarRegiao(MatrizRegioes, I, J, Regioes, NovaRegioes),
-    J2 is J + 1,
-    atualizarRegioes(MatrizRegioes, QuantidadeRegioes, NovaRegioes, I, J2, NovaRegioes).
-
-
 gerarLista(Tamanho, Lista) :- length(Lista, Tamanho).
 gerarMatriz(Colunas, Linhas, Matriz) :-
     gerarLista(Linhas, Matriz),
     maplist(gerarLista(Colunas), Matriz).
 
 /*  */
+gerarRegioes(Regioes, NovaRegioes) :- 
+    matrizRegioes(MatrizRegioes),
+    buscarMatriz(MatrizRegioes, I, J, IdRegiao), 
+    nth0(IdRegiao, Regioes, Regiao),
+    append(Regiao, [[I, J]], NovaRegiao),
+    atualizarPosicao(IdRegiao, Regiao, NovaRegiao, Regioes, NovaRegioes).
+
+/*  */
 definirRegioes(Resultado) :- 
-    matrizRegioes(MatrizRegioes), 
     quantidadeRegioes(QuantidadeRegioes), 
-    gerarMatriz(1, QuantidadeRegioes, Regioes),
-    atualizarRegioes(MatrizRegioes, QuantidadeRegioes, Regioes, 0, 0, Resultado).
+    gerarMatriz(0, QuantidadeRegioes, Regioes),
+    gerarRegioes(Regioes, Resultado),
+    imprimirMatriz(Resultado).
