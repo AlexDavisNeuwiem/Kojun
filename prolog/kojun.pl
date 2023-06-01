@@ -118,3 +118,12 @@ testeVerifica(Id) :-
     listaRegiao(Id, ListaRegiao),
     verificarRegiao(ListaRegiao).
 
+verificarAdjacentes(Matriz, I, J) :-
+    tamanhoMatriz(Tamanho),
+    buscarMatriz(Matriz, I, J, Valor),
+    not(I - 1 >= 0, buscarMatriz(Matriz, I - 1, J, Valor2), Valor =:= Valor2),
+    not(I + 1 < Tamanho, buscarMatriz(Matriz, I + 1, J, Valor3), Valor =:= Valor3),
+    not(J - 1 >= 0, buscarMatriz(Matriz, I, J - 1, Valor4), Valor =:= Valor4),
+    not(J + 1 < Tamanho, buscarMatriz(Matriz, I, J + 1, Valor5), Valor =:= Valor5).
+
+
