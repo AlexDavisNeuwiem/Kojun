@@ -97,16 +97,24 @@ gerarMatriz(Colunas, Linhas, Matriz) :-
     maplist(gerarLista(Colunas), Matriz).
 
 /*  */
-gerarRegioes(Regioes, NovaRegioes) :- 
+buscarRegiao(IdRegiao, Valor) :-
+    matrizNumerosInicial(Matriz),
     matrizRegioes(MatrizRegioes),
-    buscarMatriz(MatrizRegioes, I, J, IdRegiao), 
-    nth0(IdRegiao, Regioes, Regiao),
-    append(Regiao, [[I, J]], NovaRegiao),
-    atualizarPosicao(IdRegiao, Regiao, NovaRegiao, Regioes, NovaRegioes).
+    buscarMatriz(MatrizRegioes, I, J, IdRegiao),
+    buscarMatriz(Matriz, I, J, Valor).
 
 /*  */
-definirRegioes(Resultado) :- 
-    quantidadeRegioes(QuantidadeRegioes), 
-    gerarMatriz(0, QuantidadeRegioes, Regioes),
-    gerarRegioes(Regioes, Resultado),
-    imprimirMatriz(Resultado).
+listaRegiao(IdRegiao, ListaRegiao) :- 
+    findall(Valor, buscarRegiao(IdRegiao, Valor), ListaRegiao).
+
+/*  */
+verificarRegiao(Regiao) :-
+    list_to_set(Regiao, Conjunto),
+    length(Regiao, TamRegiao),
+    length(Conjunto, TamConjunto),
+    TamRegiao =:= TamConjunto.
+
+testeVerifica(Id) :-
+    listaRegiao(Id, ListaRegiao),
+    verificarRegiao(ListaRegiao).
+
