@@ -91,21 +91,23 @@ tamanhoRegiao(Regioes, IdRegiao, Tamanho) :- nth0(IdRegiao, Regioes, Lista), len
 testeTamanhoRegiao(IdRegiao, Tamanho) :- matrizNumerosInicial(Regioes), tamanhoRegiao(Regioes, IdRegiao, Tamanho).
 
 /*  */
-gerarLista(Tamanho, Lista) :- length(Lista, Tamanho).
-gerarMatriz(Colunas, Linhas, Matriz) :-
-    gerarLista(Linhas, Matriz),
-    maplist(gerarLista(Colunas), Matriz).
-
-/*  */
-buscarRegiao(IdRegiao, Valor) :-
-    matrizNumerosInicial(Matriz),
+buscarNumerosRegiao(Matriz, IdRegiao, Valor) :-
     matrizRegioes(MatrizRegioes),
     buscarMatriz(MatrizRegioes, I, J, IdRegiao),
     buscarMatriz(Matriz, I, J, Valor).
 
 /*  */
-listaRegiao(IdRegiao, ListaRegiao) :- 
-    findall(Valor, buscarRegiao(IdRegiao, Valor), ListaRegiao).
+listaNumerosRegiao(Matriz, IdRegiao, ListaNumerosRegiao) :- 
+    findall(Valor, buscarNumerosRegiao(Matriz, IdRegiao, Valor), ListaNumerosRegiao).
+
+/*  */
+buscarCoordenadasRegiao(IdRegiao, [I, J]) :-
+    matrizRegioes(MatrizRegioes),
+    buscarMatriz(MatrizRegioes, I, J, IdRegiao).
+
+/*  */
+listaCoordenadasRegiao(IdRegiao, ListaCoordenadasRegiao) :- 
+    findall([I, J], buscarCoordenadasRegiao(IdRegiao, [I, J]), ListaCoordenadasRegiao).
 
 /*  */
 verificarRegiao(Regiao) :-
@@ -115,15 +117,35 @@ verificarRegiao(Regiao) :-
     TamRegiao =:= TamConjunto.
 
 testeVerifica(Id) :-
-    listaRegiao(Id, ListaRegiao),
+    matrizNumerosInicial(Matriz),
+    listaNumerosRegiao(Matriz, Id, ListaRegiao),
     verificarRegiao(ListaRegiao).
 
-verificarAdjacentes(Matriz, I, J) :-
+verificarCima(Matriz, I, J, Valor) :-
+    W is (I - 1), W >= 0 -> buscarMatriz(Matriz, W, J, ValorW), Valor =\= ValorW; true.
+
+verificarBaixo(Matriz, I, J, Valor) :-
     tamanhoMatriz(Tamanho),
+    X is (I + 1), X < Tamanho -> buscarMatriz(Matriz, X, J, ValorX), Valor =\= ValorX; true.
+
+verificarEsquerda(Matriz, I, J, Valor) :-
+    Y is (J - 1), Y >= 0 -> buscarMatriz(Matriz, I, Y, ValorY), Valor =\= ValorY; true.
+
+verificarDireita(Matriz, I, J, Valor) :- 
+    tamanhoMatriz(Tamanho),
+    Z is (J + 1), Z < Tamanho -> buscarMatriz(Matriz, I, Z, ValorZ), Valor =\= ValorZ; true.
+
+verificarAdjacentes(Matriz, I, J) :-
     buscarMatriz(Matriz, I, J, Valor),
-    not(I - 1 >= 0, buscarMatriz(Matriz, I - 1, J, Valor2), Valor =:= Valor2),
-    not(I + 1 < Tamanho, buscarMatriz(Matriz, I + 1, J, Valor3), Valor =:= Valor3),
-    not(J - 1 >= 0, buscarMatriz(Matriz, I, J - 1, Valor4), Valor =:= Valor4),
-    not(J + 1 < Tamanho, buscarMatriz(Matriz, I, J + 1, Valor5), Valor =:= Valor5).
+    verificarCima(Matriz, I, J, Valor),
+    verificarBaixo(Matriz, I, J, Valor),
+    verificarEsquerda(Matriz, I, J, Valor),
+    verificarDireita(Matriz, I, J, Valor).
 
+testeAdjacentes(I, J) :-
+    matrizNumerosInicial(Matriz), 
+    verificarAdjacentes(Matriz, I, J).
 
+kojun().
+avaliarNumeros().
+numeroEhPossivel().
