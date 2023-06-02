@@ -63,16 +63,16 @@ tamanhoMatriz(Tamanho) :- matrizNumerosInicial(Matriz), length(Matriz, Tamanho).
 /* A função "maplist" aplica "max_list" para cada lista em uma lista da matriz */
 /* A função "max_list" retorna o maior elemento de uma lista */
 maximoMatriz(Matriz, Maximo) :- maplist(max_list, Matriz, ListaMaximos), max_list(ListaMaximos, Maximo).
+
+/*  */
 quantidadeRegioes(Quantidade) :- matrizRegioes(Matriz), maximoMatriz(Matriz, Maximo), Quantidade is Maximo + 1.
 
 /* Usando recursividade para imprimir cada linha de uma matriz */
 imprimirMatriz([]).
 imprimirMatriz([H|T]) :- write(H), nl, imprimirMatriz(T).
-testeImprimirMatriz() :- matrizNumerosInicial(Matriz), imprimirMatriz(Matriz).
 
 /* A função "nth0" retorna o enésimo valor de uma lista  */
 buscarMatriz(Matriz, Linha, Coluna, Valor) :- nth0(Linha, Matriz, Lista), nth0(Coluna, Lista, Valor).
-testeBuscarMatriz(Linha, Coluna, Valor) :- matrizNumerosInicial(Matriz), buscarMatriz(Matriz, Linha, Coluna, Valor).
 
 /* Percorre a lista até Posicao - 1 (length), atualiza o valor e armazena em Lista2 */
 atualizarPosicao(Posicao, ValorAntigo, ValorNovo, Lista1, Lista2) :- 
@@ -84,11 +84,9 @@ atualizarPosicao(Posicao, ValorAntigo, ValorNovo, Lista1, Lista2) :-
 atualizarMatriz(Matriz, I, J, ValorNovo, NovaMatriz) :-
     atualizarPosicao(I, Antigo, Novo, Matriz, NovaMatriz),
     atualizarPosicao(J, _Antigo, ValorNovo, Antigo, Novo).
-testeAtualizarMatriz(Linha, Coluna, Valor, NovaMatriz) :- matrizNumerosInicial(Matriz), atualizarMatriz(Matriz, Linha, Coluna, Valor, NovaMatriz).
 
 /*  */
 tamanhoRegiao(Regioes, IdRegiao, Tamanho) :- nth0(IdRegiao, Regioes, Lista), length(Lista, Tamanho), !.
-testeTamanhoRegiao(IdRegiao, Tamanho) :- matrizNumerosInicial(Regioes), tamanhoRegiao(Regioes, IdRegiao, Tamanho).
 
 /*  */
 buscarNumerosRegiao(Matriz, IdRegiao, Valor) :-
@@ -110,42 +108,49 @@ listaCoordenadasRegiao(IdRegiao, ListaCoordenadasRegiao) :-
     findall([I, J], buscarCoordenadasRegiao(IdRegiao, [I, J]), ListaCoordenadasRegiao).
 
 /*  */
-verificarRegiao(Regiao) :-
-    list_to_set(Regiao, Conjunto),
-    length(Regiao, TamRegiao),
-    length(Conjunto, TamConjunto),
-    TamRegiao =:= TamConjunto.
+verificarRepeticao([]).
+verificarRepeticao([H|T]) :- not(member(H, T)), verificarRepeticao(T).
 
-testeVerifica(Id) :-
-    matrizNumerosInicial(Matriz),
-    listaNumerosRegiao(Matriz, Id, ListaRegiao),
-    verificarRegiao(ListaRegiao).
+/*  */
+verificarRegiao(Regiao) :- delete(Regiao, 0, Lista), verificarRepeticao(Lista).
 
+/*  */
 verificarCima(Matriz, I, J, Valor) :-
     W is (I - 1), W >= 0 -> buscarMatriz(Matriz, W, J, ValorW), Valor =\= ValorW; true.
 
+/*  */
 verificarBaixo(Matriz, I, J, Valor) :-
     tamanhoMatriz(Tamanho),
     X is (I + 1), X < Tamanho -> buscarMatriz(Matriz, X, J, ValorX), Valor =\= ValorX; true.
 
+/*  */
 verificarEsquerda(Matriz, I, J, Valor) :-
     Y is (J - 1), Y >= 0 -> buscarMatriz(Matriz, I, Y, ValorY), Valor =\= ValorY; true.
 
+/*  */
 verificarDireita(Matriz, I, J, Valor) :- 
     tamanhoMatriz(Tamanho),
     Z is (J + 1), Z < Tamanho -> buscarMatriz(Matriz, I, Z, ValorZ), Valor =\= ValorZ; true.
 
-verificarAdjacentes(Matriz, I, J) :-
-    buscarMatriz(Matriz, I, J, Valor),
+/*  */
+verificarAdjacentes(Matriz, I, J, Valor) :-
     verificarCima(Matriz, I, J, Valor),
     verificarBaixo(Matriz, I, J, Valor),
     verificarEsquerda(Matriz, I, J, Valor),
     verificarDireita(Matriz, I, J, Valor).
 
-testeAdjacentes(I, J) :-
-    matrizNumerosInicial(Matriz), 
-    verificarAdjacentes(Matriz, I, J).
+/*  */
+numeroEhPossivel(Matriz, I, J, Valor) :-
+    matrizRegioes(MatrizRegioes),
+    buscarMatriz(MatrizRegioes, I, J, IdRegiao),
+    listaNumerosRegiao(Matriz, IdRegiao, ListaNumerosRegiao),
+    nth0(0, NovaListaNumerosRegiao, Valor, ListaNumerosRegiao),
+    verificarRegiao(NovaListaNumerosRegiao),
+    verificarAdjacentes(Matriz, I, J, Valor).
+
+testeNumero(I, J, Valor) :-
+    matrizNumerosInicial(Matriz),
+    numeroEhPossivel(Matriz, I, J, Valor).
 
 kojun().
 avaliarNumeros().
-numeroEhPossivel().
