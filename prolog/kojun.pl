@@ -62,7 +62,7 @@ matrizRegioes( [[0 ,0 ,1 ,1 ,1 ,2],
 maximoMatriz(Matriz, Maximo) :- maplist(max_list, Matriz, ListaMaximos), max_list(ListaMaximos, Maximo).
 
 /*  */
-quantidadeRegioes(Quantidade) :- matrizRegioes(Matriz), maximoMatriz(Matriz, Maximo), Quantidade is Maximo.
+quantidadeRegioes(Quantidade) :- matrizRegioes(Matriz), maximoMatriz(Matriz, Maximo), Quantidade is Maximo + 1.
 
 /* Usando recursividade para imprimir cada linha de uma matriz */
 imprimirMatriz([]).
@@ -93,35 +93,55 @@ listaNumerosRegiao(Matriz, IdRegiao, ListaNumerosRegiao) :-
     findall(Valor, buscarNumerosRegiao(Matriz, IdRegiao, Valor), ListaNumerosRegiao).
 
 /*  */
-buscarCoordenadasRegiao(Matriz, IdRegiao, [I, J]) :-
+buscarCoordenadasLivres(Matriz, IdRegiao, [I, J]) :-
     matrizRegioes(MatrizRegioes),
     buscarMatriz(MatrizRegioes, I, J, IdRegiao),
     buscarMatriz(Matriz, I, J, 0).
 
 /*  */
-listaCoordenadasRegiao(Matriz, IdRegiao, ListaCoordenadasRegiao) :- 
-    findall([I, J], buscarCoordenadasRegiao(Matriz, IdRegiao, [I, J]), ListaCoordenadasRegiao).
+listaCoordenadasLivres(Matriz, IdRegiao, ListaCoordenadasLivres) :- 
+    findall([I, J], buscarCoordenadasLivres(Matriz, IdRegiao, [I, J]), ListaCoordenadasLivres).
+
+/*  */
+verificarValor(Valor1, Valor2) :-
+    Valor2 =:= 0 -> true; Valor1 < Valor2.
+
+/*  */
+verificarMaiorRegiao(Matriz, I, J, Valor, Cima) :-
+    matrizRegioes(MatrizRegioes),
+    buscarMatriz(MatrizRegioes, I, J, IdRegiao),
+    buscarMatriz(MatrizRegioes, Cima, J, IdRegiaoCima),
+    IdRegiao =:= IdRegiaoCima -> buscarMatriz(Matriz, Cima, J, ValorCima), verificarValor(Valor, ValorCima);
+    buscarMatriz(Matriz, Cima, J, ValorCima), Valor =\= ValorCima.
+
+/*  */
+verificarMenorRegiao(Matriz, I, J, Valor, Baixo) :-
+    matrizRegioes(MatrizRegioes),
+    buscarMatriz(MatrizRegioes, I, J, IdRegiao),
+    buscarMatriz(MatrizRegioes, Baixo, J, IdRegiaoBaixo),
+    IdRegiao =:= IdRegiaoBaixo -> buscarMatriz(Matriz, Baixo, J, ValorBaixo), Valor > ValorBaixo; 
+    buscarMatriz(Matriz, Baixo, J, ValorBaixo), Valor =\= ValorBaixo.
 
 /*  */
 verificarCima(Matriz, I, J, Valor) :-
-    W is (I - 1), W >= 0 -> buscarMatriz(Matriz, W, J, ValorW), Valor =\= ValorW; true.
+    Cima is (I - 1), Cima >= 0 -> verificarMaiorRegiao(Matriz, I, J, Valor, Cima); true.
 
 /*  */
 verificarBaixo(Matriz, I, J, Valor) :-
     length(Matriz, Tamanho),
-    X is (I + 1), X < Tamanho -> buscarMatriz(Matriz, X, J, ValorX), Valor =\= ValorX; true.
+    Baixo is (I + 1), Baixo < Tamanho -> verificarMenorRegiao(Matriz, I, J, Valor, Baixo); true.
 
 /*  */
 verificarEsquerda(Matriz, I, J, Valor) :-
-    Y is (J - 1), Y >= 0 -> buscarMatriz(Matriz, I, Y, ValorY), Valor =\= ValorY; true.
+    Esquerda is (J - 1), Esquerda >= 0 -> buscarMatriz(Matriz, I, Esquerda, ValorEsquerda), Valor =\= ValorEsquerda; true.
 
 /*  */
 verificarDireita(Matriz, I, J, Valor) :- 
     length(Matriz, Tamanho),
-    Z is (J + 1), Z < Tamanho -> buscarMatriz(Matriz, I, Z, ValorZ), Valor =\= ValorZ; true.
+    Direita is (J + 1), Direita < Tamanho -> buscarMatriz(Matriz, I, Direita, ValorDireita), Valor =\= ValorDireita; true.
 
 /*  */
-verificarAdjacentes(Matriz, I, J, Valor) :-
+numeroEhPossivel(Matriz, I, J, Valor) :-
     verificarCima(Matriz, I, J, Valor),
     verificarBaixo(Matriz, I, J, Valor),
     verificarEsquerda(Matriz, I, J, Valor),
@@ -134,27 +154,28 @@ listaComplemento(Lista, ListaComplemento) :-
     delete(Lista, 0, ListaResto),
     subtract(ListaTotal, ListaResto, ListaComplemento).
 
-/*  */
-numeroEhValido(_Matriz, [], [], _NovaMatriz).
-numeroEhValido(Matriz, [Valor|RestoVal], [[I, J]|RestoCrd], MatrizFinal) :-
-    verificarAdjacentes(Matriz, I, J, Valor),
-    atualizarMatriz(Matriz, I, J, Valor, NovaMatriz),
-    numeroEhValido(NovaMatriz, [RestoVal], [RestoCrd], MatrizFinal).
+/* ARRUMAR FUNÇÕES DAQUI PARA BAIXO */
 
 /*  */
-avaliarNumeros(Matriz, ListaValor, ListaCoord, NovaMatriz) :-
-    permutation(ListaValor, Lista1),
-    permutation(ListaCoord, Lista2),
-    numeroEhValido(Matriz, Lista1, Lista2, NovaMatriz).
+avaliarNumero(_Matriz, _Valor, []).
+avaliarNumero(Matriz, Valor, [[I, J]|RestoCoordenadas]) :-
+    numeroEhPossivel(Matriz, I, J, Valor),
+    avaliarNumero(Matriz, Valor, RestoCoordenadas).
 
-/* */
+/*  */
+avaliarListas(_Matriz, [], _ListaCoordenadas).
+avaliarListas(Matriz, [Valor|RestoValores], ListaCoordenadas) :-
+    avaliarNumero(Matriz, Valor, ListaCoordenadas),
+    avaliarListas(Matriz, RestoValores, ListaCoordenadas).
+
+/*  */
 preencherRegiao(Matriz, IdRegiao, NovaMatriz) :-
     listaNumerosRegiao(Matriz, IdRegiao, ListaNumerosRegiao),
     listaComplemento(ListaNumerosRegiao, ListaComplemento),
-    listaCoordenadasRegiao(Matriz, IdRegiao, ListaCoordenadasRegiao),
-    avaliarNumeros(Matriz, ListaComplemento, ListaCoordenadasRegiao, NovaMatriz).
+    listaCoordenadasLivres(Matriz, IdRegiao, ListaCoordenadasLivres),
+    avaliarListas(Matriz, ListaComplemento, ListaCoordenadasLivres, NovaMatriz).
 
-/* */
+/*  */
 kojun(_Matriz, -1, _MatrizFinal).
 kojun(Matriz, IdRegiao, MatrizFinal) :-
     preencherRegiao(Matriz, IdRegiao, NovaMatriz),
@@ -165,5 +186,6 @@ kojun(Matriz, IdRegiao, MatrizFinal) :-
 main() :-
     matrizNumerosInicial(MatrizNumerosInicial),
     quantidadeRegioes(QuantidadeRegioes),
-    kojun(MatrizNumerosInicial, QuantidadeRegioes, MatrizFinal),
+    PrimeiraRegiao is QuantidadeRegioes - 1,
+    kojun(MatrizNumerosInicial, PrimeiraRegiao, MatrizFinal),
     imprimirMatriz(MatrizFinal).
