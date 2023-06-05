@@ -168,8 +168,8 @@ avaliarListas(Matriz, [Valor|RestoValores], ListaCoordenadas, [H|T]) :-
     avaliarNumero(Matriz, Valor, ListaCoordenadas, ListaResultado),
     delete(ListaResultado, [0], ListaPossibilidades),
     length(ListaPossibilidades, Tamanho),
-    Tamanho > 0 -> H = ListaPossibilidades, avaliarListas(Matriz, RestoValores, ListaCoordenadas, T);
-    avaliarListas(Matriz, RestoValores, ListaCoordenadas, [H|T]).
+    H = ListaPossibilidades, 
+    avaliarListas(Matriz, RestoValores, ListaCoordenadas, T).
 
 /*  */
 possibilidadesRegiao(Matriz, IdRegiao, ListaPossibilidades) :-
@@ -179,6 +179,8 @@ possibilidadesRegiao(Matriz, IdRegiao, ListaPossibilidades) :-
     avaliarListas(Matriz, ListaComplemento, ListaCoordenadasLivres, ListaResultado),
     append(ListaResultado, ListaComZero),
     delete(ListaComZero, 0, ListaPossibilidades), !.
+
+testePos(R, L) :- matrizNumerosInicial(M), possibilidadesRegiao(M, R, L), imprimirMatriz(L).
 
 /*  */
 kojun(_Matriz, -1, _MatrizFinal).
