@@ -167,7 +167,6 @@ avaliarListas(_Matriz, [], _ListaCoordenadas, [T]) :- T = [0].
 avaliarListas(Matriz, [Valor|RestoValores], ListaCoordenadas, [H|T]) :-
     avaliarNumero(Matriz, Valor, ListaCoordenadas, ListaResultado),
     delete(ListaResultado, [0], ListaPossibilidades),
-    length(ListaPossibilidades, Tamanho),
     H = ListaPossibilidades, 
     avaliarListas(Matriz, RestoValores, ListaCoordenadas, T).
 
