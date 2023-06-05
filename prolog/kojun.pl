@@ -157,23 +157,28 @@ listaComplemento(Lista, ListaComplemento) :-
 /* ARRUMAR FUNÇÕES DAQUI PARA BAIXO */
 
 /*  */
-avaliarNumero(_Matriz, _Valor, []).
-avaliarNumero(Matriz, Valor, [[I, J]|RestoCoordenadas]) :-
-    numeroEhPossivel(Matriz, I, J, Valor),
-    avaliarNumero(Matriz, Valor, RestoCoordenadas).
+avaliarNumero(_Matriz, _Valor, [], [T]) :- T = [0].
+avaliarNumero(Matriz, Valor, [[I, J]|RestoCoordenadas], [H|T]) :-
+    numeroEhPossivel(Matriz, I, J, Valor) -> H = [Valor, I, J], avaliarNumero(Matriz, Valor, RestoCoordenadas, T);
+    avaliarNumero(Matriz, Valor, RestoCoordenadas, [H|T]).
 
 /*  */
-avaliarListas(_Matriz, [], _ListaCoordenadas).
-avaliarListas(Matriz, [Valor|RestoValores], ListaCoordenadas) :-
-    avaliarNumero(Matriz, Valor, ListaCoordenadas),
-    avaliarListas(Matriz, RestoValores, ListaCoordenadas).
+avaliarListas(_Matriz, [], _ListaCoordenadas, [T]) :- T = [0].
+avaliarListas(Matriz, [Valor|RestoValores], ListaCoordenadas, [H|T]) :-
+    avaliarNumero(Matriz, Valor, ListaCoordenadas, ListaResultado),
+    delete(ListaResultado, [0], ListaPossibilidades),
+    length(ListaPossibilidades, Tamanho),
+    Tamanho > 0 -> H = ListaPossibilidades, avaliarListas(Matriz, RestoValores, ListaCoordenadas, T);
+    avaliarListas(Matriz, RestoValores, ListaCoordenadas, [H|T]).
 
 /*  */
-preencherRegiao(Matriz, IdRegiao, NovaMatriz) :-
+possibilidadesRegiao(Matriz, IdRegiao, ListaPossibilidades) :-
     listaNumerosRegiao(Matriz, IdRegiao, ListaNumerosRegiao),
     listaComplemento(ListaNumerosRegiao, ListaComplemento),
     listaCoordenadasLivres(Matriz, IdRegiao, ListaCoordenadasLivres),
-    avaliarListas(Matriz, ListaComplemento, ListaCoordenadasLivres, NovaMatriz).
+    avaliarListas(Matriz, ListaComplemento, ListaCoordenadasLivres, ListaResultado),
+    append(ListaResultado, ListaComZero),
+    delete(ListaComZero, 0, ListaPossibilidades), !.
 
 /*  */
 kojun(_Matriz, -1, _MatrizFinal).
