@@ -4,7 +4,7 @@
 
 /* A Matriz a seguir contém todos os valores do puzzle, sendo 0 uma região vazia */
 /* Toda matriz utilizada nesta solução é uma lista de listas */
-/*
+
 matrizNumerosInicial(  [[0, 0, 3, 0, 2, 0, 3, 0, 0, 0, 7, 0, 0, 5, 0, 3, 6], 
                         [0, 0, 0, 0, 0, 2, 0, 6, 0, 2, 0, 0, 3, 0, 0, 2, 0], 
                         [0, 2, 0, 0, 0, 0, 0, 0, 4, 0, 5, 1, 0, 2, 0, 0, 0], 
@@ -41,8 +41,9 @@ matrizRegioes( [[0 , 1 , 1 , 1 , 1 , 2 , 3 , 4 , 4 , 5 , 6 , 6 , 7 , 7 , 8 , 9 ,
                 [50, 50, 61, 61, 52, 53, 53, 59, 55, 55, 56, 62, 62, 57, 60, 60, 63],
                 [61, 61, 61, 61, 52, 52, 53, 53, 55, 55, 56, 56, 62, 60, 60, 60, 60]] ).
 
-*/
 
+
+/*
 matrizNumerosInicial(  [[2,0,0,0,1,0],
                         [0,0,0,3,0,0],
                         [0,3,0,0,5,3],
@@ -56,6 +57,7 @@ matrizRegioes( [[0 ,0 ,1 ,1 ,1 ,2],
                 [4 ,4 ,4 ,5 ,6 ,6],
                 [7 ,7 ,8 ,9 ,9 ,9],
                 [10,10,8 ,8 ,9 ,9]] ).
+*/
 
 /* A função "maplist" aplica "max_list" para cada lista em uma lista da matriz */
 /* A função "max_list" retorna o maior elemento de uma lista */
@@ -154,8 +156,6 @@ listaComplemento(Lista, ListaComplemento) :-
     delete(Lista, 0, ListaResto),
     subtract(ListaTotal, ListaResto, ListaComplemento).
 
-/* ARRUMAR FUNÇÕES DAQUI PARA BAIXO */
-
 /*  */
 avaliarNumero(_Matriz, _Valor, [], [T]) :- T = [0].
 avaliarNumero(Matriz, Valor, [[I, J]|RestoCoordenadas], [H|T]) :-
@@ -177,21 +177,19 @@ possibilidadesRegiao(Matriz, IdRegiao, ListaPossibilidades) :-
     listaCoordenadasLivres(Matriz, IdRegiao, ListaCoordenadasLivres),
     avaliarListas(Matriz, ListaComplemento, ListaCoordenadasLivres, ListaResultado),
     append(ListaResultado, ListaComZero),
-    delete(ListaComZero, 0, ListaPossibilidades), !.
-
-testePos(R, L) :- matrizNumerosInicial(M), possibilidadesRegiao(M, R, L), imprimirMatriz(L).
+    delete(ListaComZero, 0, ListaPossibilidades).
 
 /*  */
-kojun(_Matriz, -1, _MatrizFinal).
-kojun(Matriz, IdRegiao, MatrizFinal) :-
-    preencherRegiao(Matriz, IdRegiao, NovaMatriz),
+possibilidadesMatriz(-1, [T]) :- T is 0.
+possibilidadesMatriz(IdRegiao, [H|T]) :-
+    matrizNumerosInicial(Matriz),
+    possibilidadesRegiao(Matriz, IdRegiao, ListaPossibilidades),
+    H = ListaPossibilidades,
     ProximaRegiao is IdRegiao - 1,
-    kojun(NovaMatriz, ProximaRegiao, MatrizFinal).
-
-/*  */
-main() :-
-    matrizNumerosInicial(MatrizNumerosInicial),
+    possibilidadesMatriz(ProximaRegiao, T).
+possibilidadesMatriz(ListaFinal) :- 
     quantidadeRegioes(QuantidadeRegioes),
     PrimeiraRegiao is QuantidadeRegioes - 1,
-    kojun(MatrizNumerosInicial, PrimeiraRegiao, MatrizFinal),
-    imprimirMatriz(MatrizFinal).
+    possibilidadesMatriz(PrimeiraRegiao, ListaComZero),
+    delete(ListaComZero, 0, ListaReversa),
+    reverse(ListaReversa, ListaFinal), !.
