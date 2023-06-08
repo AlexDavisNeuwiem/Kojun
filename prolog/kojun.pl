@@ -181,10 +181,9 @@ possibilidadesRegiao(Matriz, IdRegiao, ListaPossibilidades) :-
     listaComplemento(ListaNumerosRegiao, ListaComplemento),
     listaCoordenadasLivres(Matriz, IdRegiao, ListaCoordenadasLivres),
     avaliarListas(Matriz, ListaComplemento, ListaCoordenadasLivres, ListaResultado),
-    % append(ListaResultado, ListaComZero),
     delete(ListaResultado, [0], ListaPossibilidades).
 
-/* 
+/*
 possibilidadesMatriz(-1, [T]) :- T is 0.
 possibilidadesMatriz(IdRegiao, [H|T]) :-
     matrizNumerosInicial(Matriz),
@@ -227,33 +226,31 @@ atualizarPossibilidades(Matriz, IdRegiao, [H|T]) :-
     H = MatrizFinal,
     ProximaRegiao is IdRegiao - 1,
     atualizarPossibilidades(MatrizFinal, ProximaRegiao, T), !; 
-
+    H = Matriz,
     ProximaRegiao is IdRegiao - 1,
-    atualizarPossibilidades(Matriz, ProximaRegiao, [H|T]), !.
+    atualizarPossibilidades(Matriz, ProximaRegiao, T), !.
 
 /*  */
-kojun(_Matriz, 0).
-kojun(Matriz, [H|T]) :- 
+kojun(Matriz) :- 
     quantidadeRegioes(QuantidadeRegioes),
     PrimeiraRegiao is QuantidadeRegioes - 1,
     atualizarPossibilidades(Matriz, PrimeiraRegiao, ListaMatrizes),
     delete(ListaMatrizes, [0], NovaListaMatrizes),
     last(NovaListaMatrizes, MatrizFinal),
-    H = MatrizFinal,
     minimoMatriz(MatrizFinal, Minimo),
-    Minimo =:= 0 -> kojun(MatrizFinal, T); kojun(Matriz, 0).
+    Minimo =:= 0 -> kojun(MatrizFinal); imprimirMatriz(MatrizFinal).
 
 
-main(MatrizFinal) :-
+main() :-
     matrizNumerosInicial(MatrizNumerosInicial),
-    kojun(MatrizNumerosInicial, ListaMatrizes),
-    delete(ListaMatrizes, [0], NovaListaMatrizes),
-    last(NovaListaMatrizes, MatrizFinal),
-    imprimirMatriz(MatrizFinal).
+    kojun(MatrizNumerosInicial).
     
 
 testeAtualizar(R) :-
+    possibilidadesMatriz(L), nl, nl,
+    imprimirMatriz(L),
     matrizNumerosInicial(M),
+    imprimirMatriz(M), nl,
     atualizarPossibilidades(M, R, NM),
     delete(NM, [0], MF),
     last(MF, FIM),
