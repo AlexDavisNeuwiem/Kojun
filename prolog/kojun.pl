@@ -218,88 +218,79 @@ filtroValores([ListaNumeroPossivel|Resto], [H|T]) :-
 /*  */
 atualizarLista(_Matriz, [], [T]) :- T = [0].
 atualizarLista(Matriz, [[Valor, I, J]|Resto], [H|T]) :-
+    numeroEhPossivel(Matriz, I, J, Valor),
     atualizarMatriz(Matriz, I, J, Valor, NovaMatriz),
     H = NovaMatriz,
     atualizarLista(NovaMatriz, Resto, T).
 
+converterLista([], [T]) :- T = [0].
+converterLista([[Valor, I, J]|RestoValores], [H|T]) :-
+    findall([Valor, _I, _J], nth0(_Posicao, [[Valor, I, J]|RestoValores], [Valor, _I, _J]), ListaConvertida),
+    delete(RestoValores, [Valor, _I, _J], NovoResto),
+    H = ListaConvertida,
+    converterLista(NovoResto, T).
+
 /*  */
-atualizarPossibilidades(_Matriz, -1, [T]) :- T = [0].
-atualizarPossibilidades(Matriz, IdRegiao, [H|T]) :-
-    possibilidadesRegiao(Matriz, IdRegiao, ListaPossibilidades),
-
-% -----------------------------------------------------------------------------%
-
+filtro([], []).
+filtro(ListaPossibilidades, ListaFiltrada) :-
     filtroValores(ListaPossibilidades, ListaValoresComZero),
     delete(ListaValoresComZero, [0], ListaFiltradaValores),
 
     append(ListaPossibilidades, ListaTotal),
-
     subtract(ListaTotal, ListaFiltradaValores, ListaNaoFiltrada),
 
     filtroCoord(ListaFiltradaValores, ListaNaoFiltrada, ListaCoordenadasComZero),
     delete(ListaCoordenadasComZero, [0], ListaTotalCoordenadas),
-    last(ListaTotalCoordenadas, ListaFiltradaCoordenadas),
 
-    append(ListaFiltradaValores, ListaFiltradaCoordenadas, ListaFinal),
+    last(ListaTotalCoordenadas, ListaNaoFiltradaCoordenadas),
 
-% -----------------------------------------------------------------------------%
+    converterLista(ListaNaoFiltradaCoordenadas, ListaConvertidaCoordenadasComZero),
+    delete(ListaConvertidaCoordenadasComZero, [0], ListaConvertidaCoordenadas),
 
-    atualizarLista(Matriz, ListaFinal, ListaMatrizes),
-    delete(ListaMatrizes, [0], NovaListaMatrizes),
+    filtroValores(ListaConvertidaCoordenadas, ListaFiltradaCoordenadasComZero),
+    delete(ListaFiltradaCoordenadasComZero, [0], ListaFiltradaCoordenadas),
 
-    last(NovaListaMatrizes, MatrizFinal) ->
-
-    H = MatrizFinal,
-    ProximaRegiao is IdRegiao - 1,
-    atualizarPossibilidades(MatrizFinal, ProximaRegiao, T), !;
-
-    H = Matriz,
-    ProximaRegiao is IdRegiao - 1,
-    atualizarPossibilidades(Matriz, ProximaRegiao, T), !.
+    append(ListaFiltradaValores, ListaFiltradaCoordenadas, ListaFiltrada).
 
 /*  */
-kojun(Matriz) :- 
-    quantidadeRegioes(QuantidadeRegioes),
-    PrimeiraRegiao is QuantidadeRegioes - 1,
-    atualizarPossibilidades(Matriz, PrimeiraRegiao, ListaMatrizes),
+atualizarPossibilidades(Matriz, IdRegiao, MatrizFinal) :-
+    possibilidadesRegiao(Matriz, IdRegiao, ListaPossibilidades),
+    filtro(ListaPossibilidades, ListaFiltrada),
+    atualizarLista(Matriz, ListaFiltrada, ListaMatrizes),
     delete(ListaMatrizes, [0], NovaListaMatrizes),
-    last(NovaListaMatrizes, MatrizFinal),
-    minimoMatriz(MatrizFinal, Minimo),
-    write(MatrizFinal), nl,
-    Minimo =:= 0 -> kojun(MatrizFinal); imprimirMatriz(MatrizFinal).
+    last(NovaListaMatrizes, MatrizFinal).
+
+/*  */
+kojun(Matriz, -1) :-
+    minimoMatriz(Matriz, Minimo),
+    Minimo =:= 0 -> quantidadeRegioes(QuantidadeRegioes), 
+    PrimeiraRegiao is QuantidadeRegioes - 1,
+    kojun(Matriz, PrimeiraRegiao); imprimirMatriz(Matriz).
+
+kojun(Matriz, IdRegiao) :- 
+    atualizarPossibilidades(Matriz, IdRegiao, MatrizFinal) ->
+    ProximaRegiao is IdRegiao - 1,
+    kojun(MatrizFinal, ProximaRegiao);
+    ProximaRegiao is IdRegiao - 1,
+    kojun(Matriz, ProximaRegiao).
 
 
 main() :-
     matrizNumerosInicial(MatrizNumerosInicial),
-    kojun(MatrizNumerosInicial).
-    
+    quantidadeRegioes(QuantidadeRegioes),
+    PrimeiraRegiao is QuantidadeRegioes - 1,
+    kojun(MatrizNumerosInicial, PrimeiraRegiao).
 
 testeAtualizar() :-
     matrizNumerosInicial(M),
     imprimirMatriz(M), nl,
-    atualizarPossibilidades(M, 10, LM1),
-    delete(LM1, [0], MF1),
-    last(MF1, FIM),
+    atualizarPossibilidades(M, 9, FIM),
     imprimirMatriz(FIM), nl,
-    atualizarPossibilidades(FIM, 10, LM2),
-    delete(LM2, [0], MF2),
-    last(MF2, FIM2),
+    atualizarPossibilidades(FIM, 6, FIM2),
     imprimirMatriz(FIM2), nl,
-    atualizarPossibilidades(FIM2, 10, LM3),
-    delete(LM3, [0], MF3),
-    last(MF3, FIM3),
-    imprimirMatriz(FIM3), nl.
-
-
-
-
-testeFiltro(R) :-
-    matrizNumerosInicial(M),
-    possibilidadesRegiao(M, R, LP),
-    write(LP), nl,
-    filtro(LP, LR),
-    write(LR), nl,
-    delete(LR, [0], LF),
-    atualizarLista(M, LF, MF),
-    last(MF, FIM),
-    imprimirMatriz(FIM).
+    atualizarPossibilidades(FIM2, 2, FIM3),
+    imprimirMatriz(FIM3), nl,
+    possibilidadesRegiao(FIM3, 7, LP7),
+    write("LP(7): "), write(LP7), nl,
+    possibilidadesRegiao(FIM3, 10, LP10),
+    write("LP(10): "), write(LP10), nl.
