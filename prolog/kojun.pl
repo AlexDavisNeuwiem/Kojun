@@ -44,7 +44,6 @@ matrizRegioes( [[0 , 1 , 1 , 1 , 1 , 2 , 3 , 4 , 4 , 5 , 6 , 6 , 7 , 7 , 8 , 9 ,
 */
 
 
-
 matrizNumerosInicial(  [[2,0,0,0,1,0],
                         [0,0,0,3,0,0],
                         [0,3,0,0,5,3],
@@ -161,46 +160,47 @@ listaComplemento(Lista, ListaComplemento) :-
     subtract(ListaTotal, ListaResto, ListaComplemento).
 
 /*  */
-avaliarNumero(_Matriz, _Valor, [], [T]) :- T = [0].
-avaliarNumero(Matriz, Valor, [[I, J]|RestoCoordenadas], [H|T]) :-
-    numeroEhPossivel(Matriz, I, J, Valor) -> H = [Valor, I, J], avaliarNumero(Matriz, Valor, RestoCoordenadas, T);
-    avaliarNumero(Matriz, Valor, RestoCoordenadas, [H|T]).
+avaliarNumero(_Matriz, _Valor, []).
+avaliarNumero(Matriz, Valor, [[I, J]|RestoCoordenadas]) :-
+    numeroEhPossivel(Matriz, I, J, Valor) -> atualizarMatriz(Matriz, I, J, Valor, NovaMatriz),
+    kojun(NovaMatriz), avaliarNumero(Matriz, Valor, RestoCoordenadas);
+    avaliarNumero(Matriz, Valor, RestoCoordenadas).
 
 /*  */
-avaliarListas(_Matriz, [], _ListaCoordenadas, [T]) :- T = [0].
-avaliarListas(Matriz, [Valor|RestoValores], ListaCoordenadas, [H|T]) :-
-    avaliarNumero(Matriz, Valor, ListaCoordenadas, ListaResultado),
-    delete(ListaResultado, [0], ListaPossibilidades),
-    length(ListaPossibilidades, Tamanho),
-    Tamanho > 0 -> H = ListaPossibilidades, avaliarListas(Matriz, RestoValores, ListaCoordenadas, T);
-    avaliarListas(Matriz, RestoValores, ListaCoordenadas, [H|T]).
+avaliarListas(_Matriz, [], _ListaCoordenadas).
+avaliarListas(Matriz, [Valor|RestoValores], ListaCoordenadas) :-
+    avaliarNumero(Matriz, Valor, ListaCoordenadas),
+    avaliarListas(Matriz, RestoValores, ListaCoordenadas).
 
 /*  */
-possibilidadesRegiao(Matriz, IdRegiao, ListaPossibilidades) :-
+possibilidadesRegiao(Matriz, IdRegiao) :-
     listaNumerosRegiao(Matriz, IdRegiao, ListaNumerosRegiao),
     listaComplemento(ListaNumerosRegiao, ListaComplemento),
     listaCoordenadasLivres(Matriz, IdRegiao, ListaCoordenadasLivres),
-    avaliarListas(Matriz, ListaComplemento, ListaCoordenadasLivres, ListaResultado),
-    delete(ListaResultado, [0], ListaPossibilidades).
-
-/*
-possibilidadesMatriz(-1, [T]) :- T is 0.
-possibilidadesMatriz(IdRegiao, [H|T]) :-
-    matrizNumerosInicial(Matriz),
-    possibilidadesRegiao(Matriz, IdRegiao, ListaPossibilidades),
-    H = ListaPossibilidades,
-    ProximaRegiao is IdRegiao - 1,
-    possibilidadesMatriz(ProximaRegiao, T).
-
-possibilidadesMatriz(ListaFinal) :- 
-    quantidadeRegioes(QuantidadeRegioes),
-    PrimeiraRegiao is QuantidadeRegioes - 1,
-    possibilidadesMatriz(PrimeiraRegiao, ListaComZero),
-    delete(ListaComZero, 0, ListaReversa),
-    reverse(ListaReversa, ListaFinal), !.
-*/
+    avaliarListas(Matriz, ListaComplemento, ListaCoordenadasLivres).
 
 /*  */
+possibilidadesMatriz(_Matriz, -1).
+possibilidadesMatriz(Matriz, IdRegiao) :-
+    possibilidadesRegiao(Matriz, IdRegiao),
+    ProximaRegiao is IdRegiao - 1,
+    possibilidadesMatriz(Matriz, ProximaRegiao).
+
+/*  */
+kojun(Matriz) :-
+    write("Not Final"), nl, imprimirMatriz(Matriz), nl,
+    minimoMatriz(Matriz, Minimo),
+    Minimo =:= 0 -> quantidadeRegioes(QuantidadeRegioes),
+    PrimeiraRegiao is QuantidadeRegioes - 1,
+    possibilidadesMatriz(Matriz, PrimeiraRegiao);
+    imprimirMatriz(Matriz), !.
+
+/*  */
+main() :-
+    matrizNumerosInicial(MatrizNumerosInicial),
+    kojun(MatrizNumerosInicial).
+
+/*
 filtroCoord([], _ListaNaoFiltrada, [T]) :- T = [0].
 filtroCoord([[_, I, J]|RestoValores], ListaNaoFiltrada, [H|T]) :-
     findall([_Valor, I, J], nth0(_Posicao, ListaNaoFiltrada, [_Valor, I, J]), ListaDescarte),
@@ -208,14 +208,12 @@ filtroCoord([[_, I, J]|RestoValores], ListaNaoFiltrada, [H|T]) :-
     H = ListaFiltrada,
     filtroCoord(RestoValores, ListaFiltrada, T).
 
-/*  */
 filtroValores([], [T]) :- T = [0].
 filtroValores([ListaNumeroPossivel|Resto], [H|T]) :-
     length(ListaNumeroPossivel, Tamanho),
     Tamanho =:= 1 -> append(ListaNumeroPossivel, ListaResultado), H = ListaResultado, filtroValores(Resto, T);
     filtroValores(Resto, [H|T]).
 
-/*  */
 atualizarLista(_Matriz, [], [T]) :- T = [0].
 atualizarLista(Matriz, [[Valor, I, J]|Resto], [H|T]) :-
     numeroEhPossivel(Matriz, I, J, Valor),
@@ -230,7 +228,6 @@ converterLista([[Valor, I, J]|RestoValores], [H|T]) :-
     H = ListaConvertida,
     converterLista(NovoResto, T).
 
-/*  */
 filtro([], []).
 filtro(ListaPossibilidades, ListaFiltrada) :-
     filtroValores(ListaPossibilidades, ListaValoresComZero),
@@ -252,7 +249,6 @@ filtro(ListaPossibilidades, ListaFiltrada) :-
 
     append(ListaFiltradaValores, ListaFiltradaCoordenadas, ListaFiltrada).
 
-/*  */
 atualizarPossibilidades(Matriz, IdRegiao, MatrizFinal) :-
     possibilidadesRegiao(Matriz, IdRegiao, ListaPossibilidades),
     filtro(ListaPossibilidades, ListaFiltrada),
@@ -260,7 +256,6 @@ atualizarPossibilidades(Matriz, IdRegiao, MatrizFinal) :-
     delete(ListaMatrizes, [0], NovaListaMatrizes),
     last(NovaListaMatrizes, MatrizFinal).
 
-/*  */
 kojun(Matriz, -1) :-
     minimoMatriz(Matriz, Minimo),
     Minimo =:= 0 -> quantidadeRegioes(QuantidadeRegioes), 
@@ -273,7 +268,6 @@ kojun(Matriz, IdRegiao) :-
     kojun(MatrizFinal, ProximaRegiao);
     ProximaRegiao is IdRegiao - 1,
     kojun(Matriz, ProximaRegiao).
-
 
 main() :-
     matrizNumerosInicial(MatrizNumerosInicial),
@@ -294,3 +288,4 @@ testeAtualizar() :-
     write("LP(7): "), write(LP7), nl,
     possibilidadesRegiao(FIM3, 10, LP10),
     write("LP(10): "), write(LP10), nl.
+*/
