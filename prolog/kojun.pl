@@ -53,15 +53,6 @@ matrizNumerosInicial([
     [0,0,0,0,0,0]
 ]).
 
-matrizKojun([
-    [2,_,_,_,1,_],
-    [_,_,_,3,_,_],
-    [_,3,_,_,5,3],
-    [_,_,_,_,_,_],
-    [_,_,3,_,4,2],
-    [_,_,_,_,_,_]
-]).
-
 matrizRegioes([
     [0 ,0 ,1 ,1 ,1 ,2],
     [3 ,3 ,3 ,3 ,3 ,2],
@@ -70,17 +61,6 @@ matrizRegioes([
     [7 ,7 ,8 ,9 ,9 ,9],
     [10,10,8 ,8 ,9 ,9]
 ]).
-
-
-/* A função "maplist" aplica "max_list" para cada lista em uma lista da matriz */
-/* A função "max_list" retorna o maior elemento de uma lista */
-maximoMatriz(Matriz, Maximo) :- maplist(max_list, Matriz, ListaMaximos), max_list(ListaMaximos, Maximo).
-
-/*  */
-quantidadeRegioes(Quantidade) :- matrizRegioes(Matriz), maximoMatriz(Matriz, Maximo), Quantidade is Maximo + 1.
-
-/*  */
-minimoMatriz(Matriz, Minimo) :- maplist(min_list, Matriz, ListaMinimos), min_list(ListaMinimos, Minimo).
 
 /* Usando recursividade para imprimir cada linha de uma matriz */
 imprimirMatriz([]).
@@ -176,11 +156,11 @@ verificarMembro(Matriz, I, J, Valor) :-
 verificarIdRegiao(Matriz, I, J) :-
     matrizRegioes(MatrizRegioes),
     buscarMatriz(MatrizRegioes, I, J, IdRegiao),
-   listaCoordenadasLivres(Matriz, IdRegiao, ListaCoordenadasLivres),
-   member([I, J], ListaCoordenadasLivres).
+    listaCoordenadasLivres(Matriz, IdRegiao, ListaCoordenadasLivres),
+    member([I, J], ListaCoordenadasLivres).
 
 /*  */
-numeroEhPossivel(Matriz, I, J, Valor, NovaMatriz) :-
+numeroEhPossivel(Matriz, I, J, NovaMatriz) :-
     verificarIdRegiao(Matriz, I, J) ->
     verificarMembro(Matriz, I, J, Valor),
     verificarCima(Matriz, I, J, Valor),
@@ -188,70 +168,52 @@ numeroEhPossivel(Matriz, I, J, Valor, NovaMatriz) :-
     verificarEsquerda(Matriz, I, J, Valor),
     verificarDireita(Matriz, I, J, Valor),
     atualizarMatriz(Matriz, I, J, Valor, NovaMatriz);
-    buscarMatriz(Matriz, I, J, Valor),
     NovaMatriz = Matriz.
 
-
-retornaNumeroValido(Matriz, Valor) :-
-    buscarMatriz(Matriz, I, J, _), numeroEhPossivel(I, J, Valor).
-
-preencherMatriz(Matriz, Lista) :-
-    findall(Valor, retornaNumeroValido(Matriz, Valor), Lista).
-
-
 /*  */
-kojun(MatrizFinal) :-
-    MatrizFinal = [
-        [X00, X01, X02, X03, X04, X05],
-        [X10, X11, X12, X13, X14, X15],
-        [X20, X21, X22, X23, X24, X25],
-        [X30, X31, X32, X33, X34, X35],
-        [X40, X41, X42, X43, X44, X45],
-        [X50, X51, X52, X53, X54, X55]
-    ],
-
+kojun(M55) :-
     matrizNumerosInicial(MNI),
 
-    numeroEhPossivel(MNI, 0, 0, X00, M00),
-    numeroEhPossivel(M00, 0, 1, X01, M01),
-    numeroEhPossivel(M01, 0, 2, X02, M02),
-    numeroEhPossivel(M02, 0, 3, X03, M03),
-    numeroEhPossivel(M03, 0, 4, X04, M04),
-    numeroEhPossivel(M04, 0, 5, X05, M05),
+    numeroEhPossivel(MNI, 0, 0, M00),
+    numeroEhPossivel(M00, 0, 1, M01),
+    numeroEhPossivel(M01, 0, 2, M02),
+    numeroEhPossivel(M02, 0, 3, M03),
+    numeroEhPossivel(M03, 0, 4, M04),
+    numeroEhPossivel(M04, 0, 5, M05),
 
-    numeroEhPossivel(M05, 1, 0, X10, M10),
-    numeroEhPossivel(M10, 1, 1, X11, M11),
-    numeroEhPossivel(M11, 1, 2, X12, M12),
-    numeroEhPossivel(M12, 1, 3, X13, M13),
-    numeroEhPossivel(M13, 1, 4, X14, M14),
-    numeroEhPossivel(M14, 1, 5, X15, M15),
+    numeroEhPossivel(M05, 1, 0, M10),
+    numeroEhPossivel(M10, 1, 1, M11),
+    numeroEhPossivel(M11, 1, 2, M12),
+    numeroEhPossivel(M12, 1, 3, M13),
+    numeroEhPossivel(M13, 1, 4, M14),
+    numeroEhPossivel(M14, 1, 5, M15),
 
-    numeroEhPossivel(M15, 2, 0, X20, M20),
-    numeroEhPossivel(M20, 2, 1, X21, M21),
-    numeroEhPossivel(M21, 2, 2, X22, M22),
-    numeroEhPossivel(M22, 2, 3, X23, M23),
-    numeroEhPossivel(M23, 2, 4, X24, M24),
-    numeroEhPossivel(M24, 2, 5, X25, M25),
+    numeroEhPossivel(M15, 2, 0, M20),
+    numeroEhPossivel(M20, 2, 1, M21),
+    numeroEhPossivel(M21, 2, 2, M22),
+    numeroEhPossivel(M22, 2, 3, M23),
+    numeroEhPossivel(M23, 2, 4, M24),
+    numeroEhPossivel(M24, 2, 5, M25),
 
-    numeroEhPossivel(M25, 3, 0, X30, M30),
-    numeroEhPossivel(M30, 3, 1, X31, M31),
-    numeroEhPossivel(M31, 3, 2, X32, M32),
-    numeroEhPossivel(M32, 3, 3, X33, M33),
-    numeroEhPossivel(M33, 3, 4, X34, M34),
-    numeroEhPossivel(M34, 3, 5, X35, M35),
+    numeroEhPossivel(M25, 3, 0, M30),
+    numeroEhPossivel(M30, 3, 1, M31),
+    numeroEhPossivel(M31, 3, 2, M32),
+    numeroEhPossivel(M32, 3, 3, M33),
+    numeroEhPossivel(M33, 3, 4, M34),
+    numeroEhPossivel(M34, 3, 5, M35),
 
-    numeroEhPossivel(M35, 4, 0, X40, M40),
-    numeroEhPossivel(M40, 4, 1, X41, M41),
-    numeroEhPossivel(M41, 4, 2, X42, M42),
-    numeroEhPossivel(M42, 4, 3, X43, M43),
-    numeroEhPossivel(M43, 4, 4, X44, M44),
-    numeroEhPossivel(M44, 4, 5, X45, M45),
+    numeroEhPossivel(M35, 4, 0, M40),
+    numeroEhPossivel(M40, 4, 1, M41),
+    numeroEhPossivel(M41, 4, 2, M42),
+    numeroEhPossivel(M42, 4, 3, M43),
+    numeroEhPossivel(M43, 4, 4, M44),
+    numeroEhPossivel(M44, 4, 5, M45),
 
-    numeroEhPossivel(M45, 5, 0, X50, M50),
-    numeroEhPossivel(M50, 5, 1, X51, M51),
-    numeroEhPossivel(M51, 5, 2, X52, M52),
-    numeroEhPossivel(M52, 5, 3, X53, M53),
-    numeroEhPossivel(M53, 5, 4, X54, M54),
-    numeroEhPossivel(M54, 5, 5, X55, _M55),
+    numeroEhPossivel(M45, 5, 0, M50),
+    numeroEhPossivel(M50, 5, 1, M51),
+    numeroEhPossivel(M51, 5, 2, M52),
+    numeroEhPossivel(M52, 5, 3, M53),
+    numeroEhPossivel(M53, 5, 4, M54),
+    numeroEhPossivel(M54, 5, 5, M55),
 
-    imprimirMatriz(MatrizFinal).
+    nl, imprimirMatriz(M55), nl, !.
