@@ -1,10 +1,11 @@
-%-- Matrizes -----------------------------------------------------------------------------------------------------------------
+%-- Matrizes de Entrada -----------------------------------------------------------------------------------------------------=
 
 /* Módulos utilizados na solução */
 :- use_module(library(apply)).
 :- use_module(library(lists)).
 
-/* A Matriz a seguir contém todos os valores do puzzle, sendo 0 uma região vazia */
+/* Matriz 6x6 que contém todos os números iniciais do puzzle kojun, sendo 0 uma posição vazia */
+
 matrizNumerosInicial([
 
     [2,0,0,0,1,0],
@@ -16,18 +17,8 @@ matrizNumerosInicial([
 
 ]).
 
-/*  */
-matrizRegioes([
 
-    [0 ,0 ,1 ,1 ,1 ,2],
-    [3 ,3 ,3 ,3 ,3 ,2],
-    [4 ,5 ,5 ,5 ,3 ,6],
-    [4 ,4 ,4 ,5 ,6 ,6],
-    [7 ,7 ,8 ,9 ,9 ,9],
-    [10,10,8 ,8 ,9 ,9]
-
-]).
-
+/* Exemplo de matriz de números iniciais com dimensões 17x17 */
 /*
 matrizNumerosInicial([
 
@@ -50,8 +41,25 @@ matrizNumerosInicial([
     [6, 2, 0, 0, 1, 3, 1, 7, 1, 2, 0, 4, 0, 4, 1, 0, 6]
 
 ]).
+*/
+
+/* Matriz 6x6 que define as regiões do quebra-cabeça. Essas regiões devem ser representadas por inteiros de 0 até n. */
+/* Sendo n a quantidade de regiões - 1, esses inteiros podem ser considerados o id de cada região. */
+
+matrizRegioes([
+
+    [0 ,0 ,1 ,1 ,1 ,2],
+    [3 ,3 ,3 ,3 ,3 ,2],
+    [4 ,5 ,5 ,5 ,3 ,6],
+    [4 ,4 ,4 ,5 ,6 ,6],
+    [7 ,7 ,8 ,9 ,9 ,9],
+    [10,10,8 ,8 ,9 ,9]
+
+]).
 
 
+/* Exemplo de matriz de regiões com dimensões 17x17 */
+/*
 matrizRegioes([
 
     [0 , 1 , 1 , 1 , 1 , 2 , 3 , 4 , 4 , 5 , 6 , 6 , 7 , 7 , 8 , 9 , 9 ],
@@ -85,7 +93,8 @@ matrizRegioes([
 imprimirMatriz([]).
 imprimirMatriz([H|T]) :- write(H), nl, imprimirMatriz(T).
 
-/* A função "nth0" retorna o enésimo valor de uma lista */
+/* A operação "nth0()" pode retornar o enésimo valor de uma lista */
+/* Como as matrizes utilizadas nessa solução são listas de listas, "buscarMatriz()" nos retorna o valor desejado */
 buscarMatriz(Matriz, Linha, Coluna, Valor) :- nth0(Linha, Matriz, Lista), nth0(Coluna, Lista, Valor).
 
 /* Percorre a lista até Posicao - 1 (length), atualiza o valor e armazena em Lista2 */
@@ -105,30 +114,32 @@ atualizarMatriz(Matriz, I, J, ValorNovo, NovaMatriz) :-
 
 %-- Listas -------------------------------------------------------------------------------------------------------------------
 
-/*  */
+/* Retornando todos os números presentes em uma região com base em um ID de entrada */
 buscarNumerosRegiao(Matriz, IdRegiao, Valor) :-
     matrizRegioes(MatrizRegioes),
     buscarMatriz(MatrizRegioes, I, J, IdRegiao),
     buscarMatriz(Matriz, I, J, Valor).
 
-/*  */
+/* Utilizando "findall()" para gerar uma lista que contenha todos os números de uma determinada região */
 listaNumerosRegiao(Matriz, IdRegiao, ListaNumerosRegiao) :- 
     findall(Valor, buscarNumerosRegiao(Matriz, IdRegiao, Valor), ListaNumerosRegiao).
 
-/*  */
+/* Retornando uma lista com os números que completam uma região */
+/* Exemplo: seja Lista = [1, 0, 5, 2, 0], o retorno será [3, 4] */
+/* Em uma região completa, o retorno é [] */
 listaComplemento(Lista, ListaComplemento) :-
     length(Lista, Tamanho),
     numlist(1, Tamanho, ListaTotal),
     delete(Lista, 0, ListaResto),
     subtract(ListaTotal, ListaResto, ListaComplemento).
 
-/*  */
+/* Retornando as coordenadas de uma região que possuem o valor 0 na matriz de números */
 buscarCoordenadasLivres(Matriz, IdRegiao, [I, J]) :-
     matrizRegioes(MatrizRegioes),
     buscarMatriz(MatrizRegioes, I, J, IdRegiao),
     buscarMatriz(Matriz, I, J, 0).
 
-/*  */
+/* Utilizando "findall()" para gerar uma lista que contenha todas as coordenadas livres de uma determinada região */
 listaCoordenadasLivres(Matriz, IdRegiao, ListaCoordenadasLivres) :- 
     findall([I, J], buscarCoordenadasLivres(Matriz, IdRegiao, [I, J]), ListaCoordenadasLivres).
 
@@ -138,14 +149,14 @@ listaCoordenadasLivres(Matriz, IdRegiao, ListaCoordenadasLivres) :-
 
 %-- Verificações -------------------------------------------------------------------------------------------------------------
 
-/*  */
+/* Verificando se a coordenada de entrada já possui um valor ou não com base em "listaCoordenadasLivres()" */
 verificarCoordenadas(Matriz, I, J) :-
     matrizRegioes(MatrizRegioes),
     buscarMatriz(MatrizRegioes, I, J, IdRegiao),
     listaCoordenadasLivres(Matriz, IdRegiao, ListaCoordenadasLivres),
     member([I, J], ListaCoordenadasLivres).
 
-/*  */
+/* Retorna um valor que não esteja na região utilizando "listaComplemento()" */
 verificarMembro(Matriz, I, J, Valor) :-
     matrizRegioes(MatrizRegioes),
     buscarMatriz(MatrizRegioes, I, J, IdRegiao),
@@ -153,11 +164,13 @@ verificarMembro(Matriz, I, J, Valor) :-
     listaComplemento(ListaNumerosRegiao, ListaValoresFaltantes),
     member(Valor, ListaValoresFaltantes).
 
-/*  */
+/* Faz parte de "verificarMaiorRegiao()" */
+/* Zero não é considerado maior quando está acima de um número na matriz */
 verificarValor(Valor1, Valor2) :-
     Valor2 =:= 0 -> true; Valor1 < Valor2.
 
-/*  */
+/* Retorna um valor que é menor que o número da posição acima dele na matriz */
+/* Primeiramente é avaliado se as posições pertencem à mesma região para depois comparar os valores */
 verificarMaiorRegiao(Matriz, I, J, Valor, Cima) :-
     matrizRegioes(MatrizRegioes),
     buscarMatriz(MatrizRegioes, I, J, IdRegiao),
@@ -168,7 +181,8 @@ verificarMaiorRegiao(Matriz, I, J, Valor, Cima) :-
     buscarMatriz(Matriz, Cima, J, ValorCima),
     Valor =\= ValorCima.
 
-/*  */
+/* Retorna um valor que é maior que o número da posição abaixo dele na matriz */
+/* Primeiramente é avaliado se as posições pertencem à mesma região para depois comparar os valores */
 verificarMenorRegiao(Matriz, I, J, Valor, Baixo) :-
     matrizRegioes(MatrizRegioes),
     buscarMatriz(MatrizRegioes, I, J, IdRegiao),
@@ -177,24 +191,26 @@ verificarMenorRegiao(Matriz, I, J, Valor, Baixo) :-
     buscarMatriz(Matriz, Baixo, J, ValorBaixo), Valor > ValorBaixo; 
     buscarMatriz(Matriz, Baixo, J, ValorBaixo), Valor =\= ValorBaixo.
 
-/*  */
+/* Dada uma coordenada, verifica se a posição acima dela na matriz é valida */
+/* Se a posição de cima for válida, retorna um valor que seja menor que o número dessa posição */
 verificarCima(Matriz, I, J, Valor) :-
     Cima is (I - 1), Cima >= 0 ->
     verificarMaiorRegiao(Matriz, I, J, Valor, Cima); true.
 
-/*  */
+/* Dada uma coordenada, verifica se a posição abaixo dela na matriz é valida */
+/* Se a posição de baixo for válida, retorna um valor que seja maior que o número dessa posição */
 verificarBaixo(Matriz, I, J, Valor) :-
     length(Matriz, Tamanho),
     Baixo is (I + 1), Baixo < Tamanho ->
     verificarMenorRegiao(Matriz, I, J, Valor, Baixo); true.
 
-/*  */
+/* Dada uma coordenada, retorna um valor que seja diferente do número à sua esquerda na matriz */
 verificarEsquerda(Matriz, I, J, Valor) :-
     Esquerda is (J - 1), Esquerda >= 0 ->
     buscarMatriz(Matriz, I, Esquerda, ValorEsquerda),
     Valor =\= ValorEsquerda; true.
 
-/*  */
+/* Dada uma coordenada, retorna um valor que seja diferente do número à sua direita na matriz */
 verificarDireita(Matriz, I, J, Valor) :- 
     length(Matriz, Tamanho),
     Direita is (J + 1), Direita < Tamanho ->
@@ -207,7 +223,9 @@ verificarDireita(Matriz, I, J, Valor) :-
 
 %-- Preenchendo a Matriz -----------------------------------------------------------------------------------------------------
 
-/*  */
+/* Dado uma matriz e uma coordenada, retorna um valor válido para essa posição segundo as regras do jogo */
+/* Com o valor válido, gera uma nova matriz de números e a retorna */
+/* Caso a posição já esteja preenchida, retorna a própria matriz de entrada */
 preencherPosicao(Matriz, I, J, NovaMatriz) :-
     verificarCoordenadas(Matriz, I, J) ->
     verificarMembro(Matriz, I, J, Valor),
@@ -224,7 +242,9 @@ preencherPosicao(Matriz, I, J, NovaMatriz) :-
 
 %-- Resolvendo o Puzzle ------------------------------------------------------------------------------------------------------
 
-/*  */
+/* Aplicando "preencherPosicao()" para cada posição da matriz */
+/* Para cada posição, é dada uma matriz de entrada e uma nova matriz é retornada */
+
 kojun() :-
 
     matrizNumerosInicial(MNI),
@@ -271,7 +291,7 @@ kojun() :-
     preencherPosicao(M53, 5, 4, M54),
     preencherPosicao(M54, 5, 5, M55),
 
-    nl, imprimirMatriz(M55), nl, !.
+    nl, imprimirMatriz(M55), nl.
 
 /*
 kojun() :-
@@ -583,7 +603,7 @@ kojun() :-
     preencherPosicao(M286, 16, 15, M287),
     preencherPosicao(M287, 16, 16, M288),
 
-    nl, imprimirMatriz(M288), nl, !.
+    nl, imprimirMatriz(M288), nl.
 */
 
 %------------------------------------------------------------------------------------------------------------------------------
