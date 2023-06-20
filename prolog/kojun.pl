@@ -89,9 +89,13 @@ matrizRegioes([
 
 %-- Operações em Matrizes ----------------------------------------------------------------------------------------------------
 
+/* Usando recursividade para imprimir cada elemento de uma lista */
+imprimirLista([]).
+imprimirLista([H|T]) :- write(H), write(" "), imprimirLista(T).
+
 /* Usando recursividade para imprimir cada linha de uma matriz */
 imprimirMatriz([]).
-imprimirMatriz([H|T]) :- write(H), nl, imprimirMatriz(T).
+imprimirMatriz([H|T]) :- imprimirLista(H), nl, imprimirMatriz(T).
 
 /* A operação "nth0()" pode retornar o enésimo valor de uma lista */
 /* Como as matrizes utilizadas nessa solução são listas de listas, "buscarMatriz()" nos retorna o valor desejado */
