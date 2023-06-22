@@ -4,22 +4,8 @@
 :- use_module(library(apply)).
 :- use_module(library(lists)).
 
-/* Matriz 6x6 que contém todos os números iniciais do puzzle kojun, sendo 0 uma posição vazia */
+/* Matriz 17x17 que contém todos os números iniciais do puzzle kojun, sendo 0 uma posição vazia */
 
-matrizNumerosInicial([
-
-    [2,0,0,0,1,0],
-    [0,0,0,3,0,0],
-    [0,3,0,0,5,3],
-    [0,0,0,0,0,0],
-    [0,0,3,0,4,2],
-    [0,0,0,0,0,0]
-
-]).
-
-
-/* Exemplo de matriz de números iniciais com dimensões 17x17 */
-/*
 matrizNumerosInicial([
 
     [0, 0, 3, 0, 2, 0, 3, 0, 0, 0, 7, 0, 0, 5, 0, 3, 6], 
@@ -41,25 +27,11 @@ matrizNumerosInicial([
     [6, 2, 0, 0, 1, 3, 1, 7, 1, 2, 0, 4, 0, 4, 1, 0, 6]
 
 ]).
-*/
 
-/* Matriz 6x6 que define as regiões do quebra-cabeça. Essas regiões devem ser representadas por inteiros de 0 até n. */
+
+/* Matriz 17x17 que define as regiões do quebra-cabeça. Essas regiões devem ser representadas por inteiros de 0 até n. */
 /* Sendo n a quantidade de regiões - 1, esses inteiros podem ser considerados o id de cada região. */
 
-matrizRegioes([
-
-    [0 ,0 ,1 ,1 ,1 ,2],
-    [3 ,3 ,3 ,3 ,3 ,2],
-    [4 ,5 ,5 ,5 ,3 ,6],
-    [4 ,4 ,4 ,5 ,6 ,6],
-    [7 ,7 ,8 ,9 ,9 ,9],
-    [10,10,8 ,8 ,9 ,9]
-
-]).
-
-
-/* Exemplo de matriz de regiões com dimensões 17x17 */
-/*
 matrizRegioes([
 
     [0 , 1 , 1 , 1 , 1 , 2 , 3 , 4 , 4 , 5 , 6 , 6 , 7 , 7 , 8 , 9 , 9 ],
@@ -81,7 +53,7 @@ matrizRegioes([
     [61, 61, 61, 61, 52, 52, 53, 53, 55, 55, 56, 56, 62, 60, 60, 60, 60]
 
 ]).
-*/
+
 
 %-----------------------------------------------------------------------------------------------------------------------------
 
@@ -249,55 +221,6 @@ preencherPosicao(Matriz, I, J, NovaMatriz) :-
 /* Aplicando "preencherPosicao()" para cada posição da matriz */
 /* Para cada posição, é dada uma matriz de entrada e uma nova matriz é retornada */
 
-kojun() :-
-
-    matrizNumerosInicial(MNI),
-
-    preencherPosicao(MNI, 0, 0, M00),
-    preencherPosicao(M00, 0, 1, M01),
-    preencherPosicao(M01, 0, 2, M02),
-    preencherPosicao(M02, 0, 3, M03),
-    preencherPosicao(M03, 0, 4, M04),
-    preencherPosicao(M04, 0, 5, M05),
-
-    preencherPosicao(M05, 1, 0, M10),
-    preencherPosicao(M10, 1, 1, M11),
-    preencherPosicao(M11, 1, 2, M12),
-    preencherPosicao(M12, 1, 3, M13),
-    preencherPosicao(M13, 1, 4, M14),
-    preencherPosicao(M14, 1, 5, M15),
-
-    preencherPosicao(M15, 2, 0, M20),
-    preencherPosicao(M20, 2, 1, M21),
-    preencherPosicao(M21, 2, 2, M22),
-    preencherPosicao(M22, 2, 3, M23),
-    preencherPosicao(M23, 2, 4, M24),
-    preencherPosicao(M24, 2, 5, M25),
-
-    preencherPosicao(M25, 3, 0, M30),
-    preencherPosicao(M30, 3, 1, M31),
-    preencherPosicao(M31, 3, 2, M32),
-    preencherPosicao(M32, 3, 3, M33),
-    preencherPosicao(M33, 3, 4, M34),
-    preencherPosicao(M34, 3, 5, M35),
-
-    preencherPosicao(M35, 4, 0, M40),
-    preencherPosicao(M40, 4, 1, M41),
-    preencherPosicao(M41, 4, 2, M42),
-    preencherPosicao(M42, 4, 3, M43),
-    preencherPosicao(M43, 4, 4, M44),
-    preencherPosicao(M44, 4, 5, M45),
-
-    preencherPosicao(M45, 5, 0, M50),
-    preencherPosicao(M50, 5, 1, M51),
-    preencherPosicao(M51, 5, 2, M52),
-    preencherPosicao(M52, 5, 3, M53),
-    preencherPosicao(M53, 5, 4, M54),
-    preencherPosicao(M54, 5, 5, M55),
-
-    nl, imprimirMatriz(M55), nl.
-
-/*
 kojun() :-
     matrizNumerosInicial(MNI),
 
@@ -608,6 +531,5 @@ kojun() :-
     preencherPosicao(M287, 16, 16, M288),
 
     nl, imprimirMatriz(M288), nl.
-*/
 
 %-----------------------------------------------------------------------------------------------------------------------------
